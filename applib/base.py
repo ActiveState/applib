@@ -62,11 +62,11 @@ class Locations(object):
     @property
     def log_file_path(self):
         if sys.platform.startswith('win'):
-            return join(self.user_data_dir, self.app.name + '.log')
+            return join(self.user_cache_dir, self.app.name + '.log')
         elif sys.platform.startswith('darwin'):
             return join(expanduser('~/Library/Logs'), self.app.name + '.log')
         else:
-            return join(self.user_data_dir, self.app.name.lower() + '.log')
+            return join(expanduser('~'), self.app.name.lower() + '.log')
 
 if __name__ == '__main__':
     # self-test code
