@@ -4,6 +4,22 @@ from applib import location
 
 
 class Application(object):
+    """Object representing the application
+    
+    - name:                   Name of the application
+    
+    - company:                Company developing the application
+    
+    - compatibility_version:  The major version which promises
+                              backward-compatability among all of its minor
+                              versions. Eg: 5.2; 5.2.1, 5.2.2, etc.. should
+                              use the same compatability version (5.2). This
+                              value is used in the settings directory path.
+                              
+    - locations:              An object holding a set of OS-specific but
+                              generic location values (eg: APPDATA). See
+                              ``Locations`` class for details.
+    """
 
     def __init__(self, name, company, compatibility_version=None):
         self.name = name
@@ -12,6 +28,14 @@ class Application(object):
         self.locations = Locations(self)
 
 class Locations(object):
+    """A object holding the locations that are generic to an application.
+    
+    The following locations are available:
+    
+    - user_data_dir:   Directory to store the user's settings
+    - site_data_dir:   Directory to store global application settings
+    - user_cache_dir:  Directory to keep temperory/cache files
+    """
 
     def __init__(self, app):
         self.app = app
