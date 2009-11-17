@@ -1,5 +1,8 @@
 """Base module"""
 
+import sys
+from os.path import abspath, join
+
 from applib import location
 
 
@@ -35,6 +38,7 @@ class Locations(object):
     - user_data_dir:   Directory to store the user's settings
     - site_data_dir:   Directory to store global application settings
     - user_cache_dir:  Directory to keep temperory/cache files
+    - log_file_path:   Location of the application log file
     """
 
     def __init__(self, app):
@@ -55,11 +59,20 @@ class Locations(object):
         return location.user_cache_dir(
             self.app.name, self.app.company, self.app.compatibility_version)
     
+    @property
+    def log_file_path(self):
+        if sys.platform.startswith('win'):
+            return join(self.user_data_dir, self.app.name + '.log')
+        elif sys.platform.startswith('darwin'):
+            return join(expanduser('~/Library/Logs'), self.app.name + '.log')
+        else:
+            return join(self.user_data_dir, self.app.name.lower() + '.log')
 
 if __name__ == '__main__':
     # self-test code
-    app = Application('PyPM', 'ActiveState', '1')
+    app = Application('PyPM', 'ActiveState', '0.1')
     print app.locations.user_data_dir
     print app.locations.site_data_dir
     print app.locations.user_cache_dir
+    print app.locations.log_file_path
 
