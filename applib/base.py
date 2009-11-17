@@ -26,7 +26,7 @@ class Application(object):
 
     def __init__(self, name, company, compatibility_version=None):
         self.name = name
-        self.company = name
+        self.company = company
         self.compatibility_version = compatibility_version
         self.locations = Locations(self)
 
