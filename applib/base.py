@@ -1,7 +1,7 @@
 """Base module"""
 
 import sys
-from os.path import abspath, join
+from os.path import abspath, join, expanduser
 
 from applib import location
 
