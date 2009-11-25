@@ -66,7 +66,7 @@ class Locations(object):
         elif sys.platform.startswith('darwin'):
             return join(expanduser('~/Library/Logs'), self.app.name + '.log')
         else:
-            return join(expanduser('~'), self.app.name.lower() + '.log')
+            return join(expanduser('~'), '.'+self.app.name.lower() + '.log')
 
 if __name__ == '__main__':
     # self-test code
