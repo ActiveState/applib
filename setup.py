@@ -1,7 +1,11 @@
+import distribute_setup
+distribute_setup.use_setuptools()
+
 from setuptools import setup, find_packages
 import sys, os
 
 from applib import __version__
+
 
 setup(name='applib',
       version=__version__,
@@ -14,7 +18,8 @@ setup(name='applib',
       author_email='srid@nearfar.org',
       url='http://bitbucket.org/srid/applib',
       license='MIT',
-      packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+      packages=find_packages(exclude=[
+          'distribute_setup', 'examples', 'tests']),
       include_package_data=True,
       zip_safe=True,
       install_requires=[
