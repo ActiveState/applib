@@ -2,8 +2,12 @@
 
 import sys
 from os.path import abspath, join, expanduser
+import logging
 
-from applib import location
+from applib import location, log
+from applib.log import LogawareCmdln as Cmdln
+
+__all__ = ['Application', 'Cmdln']
 
 
 class Application(object):
@@ -29,6 +33,17 @@ class Application(object):
         self.company = company
         self.compatibility_version = compatibility_version
         self.locations = Locations(self)
+        
+    def run(self, cmdln_class):
+        """Run the application using the given cmdln processor.
+        
+        This method also ensures configuration of logging handlers for console
+        """
+        assert issubclass(cmdln_class, Cmdln)
+        l = logging.getLogger('')
+        log.setup_trace(l, self.locations.log_file_path)
+        cmdln_class(install_console=True).main()
+
 
 class Locations(object):
     """A object holding the locations that are generic to an application.
@@ -67,6 +82,7 @@ class Locations(object):
             return join(expanduser('~/Library/Logs'), self.app.name + '.log')
         else:
             return join(expanduser('~'), '.'+self.app.name.lower() + '.log')
+
 
 if __name__ == '__main__':
     # self-test code
