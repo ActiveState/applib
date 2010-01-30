@@ -161,7 +161,7 @@ def colprint(table, totwidth=None):
         totwidth -= 1 # for not printing an extra empty line on windows
     numcols = max(len(row) for row in table)
     # ensure all rows have >= numcols columns, maybe empty
-    padded = [row+numcols*('',) for row in table]
+    padded = [row+numcols*['',] for row in table]
     # compute col widths, including separating space (except for last one)
     widths = [ 1 + max(len(x) for x in column) for column in zip(*padded)]
     widths[-1] -= 1
@@ -175,8 +175,9 @@ def colprint(table, totwidth=None):
             break
     # and finally, the output phase!
     for row in padded:
-        LOG.info(''.join([u'%*s' % (-w, i[:w])
-                          for w, i in zip(widths, row)]))
+        s = ''.join([u'%*s' % (-w, i[:w])
+                     for w, i in zip(widths, row)])
+        LOG.info(s)
 
 
 def find_console_width():

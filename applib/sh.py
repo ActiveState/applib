@@ -1,6 +1,7 @@
 """Various shell related wrappers
 """
 
+import os
 from os import path
 from contextlib import contextmanager
 
@@ -55,9 +56,12 @@ def pack_archive(filename, files, pwd, filetype="tgz"):
 # Path/file routines
 #
 
-def mkdirs(path):
-    """Make all directories along ``path``"""
-    os.makedirs(path)
+def mkdirs(pth):
+    """Make all directories along ``pth``"""
+    if not path.exists(pth):
+        os.makedirs(pth)
+    else:
+        assert path.isdir(pth)
     
     
 def rm(p):
