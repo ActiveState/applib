@@ -102,7 +102,19 @@ def cd(path):
         os.chdir(cwd)
 
 
-
+@contextmanager
+def tmpdir(prefix='tmp-', suffix=''):
+    """__with__ context to work in a temporary working directory
+    
+    Temporary directory will be created unless an exception was raised. During
+    the context, CWD will be changed to the temporary directory.
+    """
+    d = tempfile.mkdtemp(prefix=prefix, suffix=suffix)
+    with cd(d):
+        yield d
+    rm(d)
+    
+    
 def _copytree(src, dst, symlinks=False, ignore=None, copyperms=True):
     """Forked shutil.copytree for `copyperms` support"""
     names = os.listdir(src)
