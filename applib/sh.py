@@ -91,6 +91,21 @@ def cp(src, dest, _mkdirs=False, ignore=None, copyperms=True):
         _copytree(src, dest, ignore=ignore, copyperms=copyperms)
     else:
         shutil.copyfile(src, dest)
+
+
+def find(pth, pattern):
+    """Find files or directories matching ``pattern`` under ``pth``"""
+    matches = []
+    if path.isfile(pth):
+        if fnmatch(path.basename(pth), pattern):
+            matches.append(pth)
+    else:
+        for root, dirs, files in os.walk(path):
+            matches.extend([
+                path.join(root, f) for f in files+dirs
+                if fnmatch(f, filename_pattern)
+            ])
+    return matches
     
     
 @contextmanager

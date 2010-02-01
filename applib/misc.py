@@ -17,3 +17,15 @@ def existing(pth):
         'not of string type: %s <%s>' % (pth, type(pth))
     assert exists(pth), 'file/directory not found: %s' % pth
     return pth
+
+
+def require_option(options, option_name):
+    """
+    >>> require_option('foo-bar')
+    ...
+    CmdlnUserError: required option, --foo-bar, is mising
+    """
+    option_var_name = option_name.replace('-', '_')
+    if getattr(options, option_var_name) is None:
+        raise cmdln.CmdlnUserError, \
+            'required option, --%s, is missing' % option_name
