@@ -185,6 +185,32 @@ def find_console_width():
         return _find_windows_console_width()
     else:
         return _find_unix_console_width()
+
+
+def longrun(log, finalfn=lambda: None):
+    """Decorator for performing a long operation with consideration for the
+    command line.
+
+    1. Catch keyboard interrupts and exit gracefully
+
+    2. Print total time elapsed always at the end (successful or not)
+
+    3. Call ``finalfn`` always at the end (successful or not)
+    """
+    start_time = datetime.now()
+
+    try:
+        yield
+    except KeyboardInterrupt:
+        log.info('*** interrupted by user - Ctrl+c ***')
+        raise SystemExit, 3
+    finally:
+        finalfn()
+        end_time = datetime.now()
+
+        log.info('')
+        log.info('-----')
+        log.info('Total time elapsed: %s', end_time-start_Time)
         
         
 def _find_unix_console_width():
