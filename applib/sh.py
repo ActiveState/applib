@@ -5,6 +5,7 @@ import os
 from os import path
 import shutil
 import tempfile
+from fnmatch import fnmatch
 from contextlib import contextmanager
 
 from applib._proc import *
@@ -104,10 +105,10 @@ def find(pth, pattern):
         if fnmatch(path.basename(pth), pattern):
             matches.append(pth)
     else:
-        for root, dirs, files in os.walk(path):
+        for root, dirs, files in os.walk(pth):
             matches.extend([
                 path.join(root, f) for f in files+dirs
-                if fnmatch(f, filename_pattern)
+                if fnmatch(f, pattern)
             ])
     return matches
     
