@@ -6,7 +6,8 @@ import zipfile
 from contextlib import closing
 
 from applib import sh
-from pypm.common import console
+
+__all__ = ['implementors']
 
 
 class CompressedFile(object):
@@ -30,16 +31,16 @@ class ZippedFile(CompressedFile):
             except OSError, e:
                 if e.errno == 17:
                     # http://bugs.python.org/issue6510
-                    raise InvalidFile, e
+                    raise sh.PackError, e
                 # http://bugs.python.org/issue6609
                 if sys.platform.startswith('win'):
                     if isinstance(e, WindowsError) and e.winerror == 267:
-                        raise InvalidFile, ('uses Windows special name (%s)' % e)
+                        raise sh.PackError, ('uses Windows special name (%s)' % e)
                 raise
             finally:
                 f.close()
         except (zipfile.BadZipfile, zipfile.LargeZipFile), e:
-            raise InvalidFile, e
+            raise sh.PackError, e
 
     @classmethod
     def pack(cls, paths, file):
@@ -67,11 +68,11 @@ class TarredFile(CompressedFile):
             finally:
                 f.close()
         except tarfile.TarError, e:
-            raise InvalidFile, e
+            raise sh.PackError, e
         except IOError, e:
             # see http://bugs.python.org/issue6584
             if 'CRC check failed' in str(e):
-                raise InvalidFile, e
+                raise sh.PackError, e
             else:
                 raise
             
@@ -79,9 +80,9 @@ class TarredFile(CompressedFile):
     def pack(cls, paths, file):
         f = tarfile.open(file, cls._get_mode('w'))
         try:
-            for path in paths:
-                assert exists(path), '"%s" does not exist' % path
-                f.add(path)
+            for pth in paths:
+                assert path.exists(pth), '"%s" does not exist' % path
+                f.add(pth)
         finally:
             f.close()
 
@@ -108,11 +109,15 @@ class Bzip2TarredFile(TarredFile):
         return mode + ':bz2'
 
 
-class InvalidFile(Exception):
-    """The given compressed file is invalid. It cannot be properly extracted"""
-class MultipleTopLevels(InvalidFile):
+implementors = dict(
+    zip = ZippedFile,
+    tgz = GzipTarredFile,
+    bz2 = Bzip2TarredFile)
+
+
+class MultipleTopLevels(sh.PackError):
     """Can be extracted, but contains multiple top-level dirs"""
-class SingleFile(InvalidFile):
+class SingleFile(sh.PackError):
     """Contains nothing but a single file. Compressed archived is expected to
     contain one directory
     """
@@ -122,12 +127,12 @@ def _possible_dir_name(contents):
     """The directory where the the files are possibly extracted."""
     top_level_dirs = _find_top_level_directories(contents, sep='/')
     if len(top_level_dirs) == 0:
-        raise InvalidFile, 'has no contents'
+        raise sh.PackError, 'has no contents'
     elif len(top_level_dirs) > 1:
         raise MultipleTopLevels, 'more than one top levels: %s' % top_level_dirs
-    d = abspath(top_level_dirs[0])
-    assert exists(d), 'missing dir: %s' % d
-    if not isdir(d):
+    d = path.abspath(top_level_dirs[0])
+    assert path.exists(d), 'missing dir: %s' % d
+    if not path.isdir(d):
         # eg: http://pypi.python.org/pypi/DeferArgs/0.4
         raise SingleFile, 'contains a single file: %s' % d
     return d
@@ -153,8 +158,8 @@ def _ensure_read_write_access(tarfileobj):
 def _find_top_level_directories(fileslist, sep):
     """Find the distinct first components in the fileslist"""
     toplevels = set()
-    for path in fileslist:
-        firstcomponent = path.split(sep, 1)[0]
+    for pth in fileslist:
+        firstcomponent = pth.split(sep, 1)[0]
         toplevels.add(firstcomponent)
     return list(toplevels)
     

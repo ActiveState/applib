@@ -3,6 +3,8 @@
 
 import os
 from os import path
+import shutil
+import tempfile
 from contextlib import contextmanager
 
 from applib._proc import *
@@ -16,7 +18,7 @@ class PackError(Exception):
     """Error during pack or unpack"""
     
 
-def unpack_archive(filename, path='.'):
+def unpack_archive(filename, pth='.'):
     """Unpack the archive under ``path``
     
     Return (unpacked directory path, filetype)
@@ -24,12 +26,12 @@ def unpack_archive(filename, path='.'):
     from applib import _compression
     
     assert path.isfile(filename)
-    assert path.isdir(path)
+    assert path.isdir(pth)
     
-    for x in _compression.implementors.values():
-        if x.is_valid(filename):
-            with cd(path):
-                return (x(filename).extract(), x)
+    for filetype, implementor in _compression.implementors.items():
+        if implementor.is_valid(filename):
+            with cd(pth):
+                return (implementor(filename).extract(), filetype)
     else:
         raise PackError, 'unknown compression format: ' + filename
 
@@ -41,15 +43,17 @@ def pack_archive(filename, files, pwd, filetype="tgz"):
     """
     from applib import _compression
     
-    assert isdir(pwd)
-    assert filetype in _compression.implementors
+    assert path.isdir(pwd)
+    assert filetype in _compression.implementors, 'invalid filetype: %s' % filetype
     
     if path.exists(filename):
         rm(filename)
-        
+    
     with cd(pwd):
-        relnames = [path.relpath(file, cwd) for file in files]
+        relnames = [path.relpath(file, pwd) for file in files]
         _compression.implementors[filetype].pack(relnames, filename)
+        
+    return filename
         
 
 #
@@ -109,12 +113,12 @@ def find(pth, pattern):
     
     
 @contextmanager
-def cd(path):
+def cd(pth):
     """With context to temporarily change directory"""
-    assert path.isdir(path)
+    assert path.isdir(pth)
     
     cwd = os.getcwd()
-    os.chdir(path)
+    os.chdir(pth)
     try:
         yield
     finally:

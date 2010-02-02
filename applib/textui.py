@@ -187,6 +187,7 @@ def find_console_width():
         return _find_unix_console_width()
 
 
+@contextmanager
 def longrun(log, finalfn=lambda: None):
     """Decorator for performing a long operation with consideration for the
     command line.
@@ -210,7 +211,7 @@ def longrun(log, finalfn=lambda: None):
 
         log.info('')
         log.info('-----')
-        log.info('Total time elapsed: %s', end_time-start_Time)
+        log.info('Total time elapsed: %s', end_time-start_time)
         
         
 def _find_unix_console_width():
