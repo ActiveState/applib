@@ -12,7 +12,16 @@ setup(name='applib',
       description="Cross-platform application utilities",
       long_description="""\
 """,
-      classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+      classifiers=[
+          'Development Status :: 3 - Alpha',
+          'Intended Audience :: Developers',
+          'License :: OSI Approved :: MIT License',
+          'Operating System :: OS Independent',
+          'Programming Language :: Python :: 2.6',
+          'Programming Language :: Python :: 2.7',
+          'Topic :: Software Development :: Libraries :: Python Modules',
+          'Topic :: Utilities',
+      ],
       keywords='',
       author='Sridhar Ratnakumar',
       author_email='srid@nearfar.org',
