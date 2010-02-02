@@ -10,7 +10,7 @@ from contextlib import nested
 
 from applib.misc import xjoin
 
-__all__ = ['run', 'RunError']
+__all__ = ['run', 'RunError', 'RunNonZeroReturn', 'RunTimedout']
 
 
 class RunError(Exception): pass
@@ -30,7 +30,7 @@ class RunNonZeroReturn(RunError):
             'stderr:\n{0}'.format(stderr),
             'stdout:\n{0}'.format(stdout),
             ])
-        super(NonZeroReturnCode, self).__init__(msg)
+        super(RunNonZeroReturn, self).__init__(msg)
 
 
 class RunTimedout(RunError):
@@ -79,8 +79,9 @@ def run(cmd, merge_streams=False, timeout=None, env=None):
                 seconds_passed = time.time() - t_nought
                 if timeout and seconds_passed > timeout:
                     p.terminate()
-                    raise TimeoutError(cmd, timeout,
-                                       _read_tmpfd(outf), _read_tmpfd(errf))
+                    raise RunTimedout(
+                        cmd, timeout,
+                        _read_tmpfd(outf), _read_tmpfd(errf))
                 time.sleep(0.1)
 
         # the process has exited by now; nothing will to be written to
@@ -89,7 +90,7 @@ def run(cmd, merge_streams=False, timeout=None, env=None):
         stderr = _read_tmpfd(errf)
 
     if p.returncode != 0:
-        raise NonZeroReturnCode(p, cmd, stdout, stderr)
+        raise RunNonZeroReturn(p, cmd, stdout, stderr)
     else:
         return stdout, stderr
 
