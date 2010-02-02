@@ -7,6 +7,10 @@ import sys, os
 from applib import __version__
 
 
+if sys.version_info[:2] >= (3, 0):
+    raise SystemExit, 'applib is not ported to Python 3 yet.'
+
+
 setup(name='applib',
       version=__version__,
       description="Cross-platform application utilities",
