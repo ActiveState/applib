@@ -21,9 +21,9 @@ from os.path import exists, dirname
 from contextlib import contextmanager
 import json
 
-import sqlalchemy.types
-from sqlalchemy import Table, Column, String, Text, MetaData
+from sqlalchemy import Table, Column, MetaData
 from sqlalchemy import create_engine
+from sqlalchemy.types import String, Text, Boolean, PickleType
 from sqlalchemy.orm import sessionmaker, scoped_session, mapper
 
 
@@ -196,25 +196,39 @@ class SimpleObject(object):
 
 class _get_best_column_type():
     """Return the best column type for the given name."""
-    def __init__(self):
-        self.mapping = {}
-        # String
-        for name in ['name', 'version', 'keywords', 'home_page', 'license',
-                     'author', 'author_email', 'maintainer', 'maintainer_email',
-                     'osarch', 'pyver', 'pkg_version', 'relpath', 'tags']:
-            self.mapping[name] = String
-        # Text
-        for name in ['summary', 'description']:
-            self.mapping[name] = Text
-        # PickleType
-        for name in ['install_requires', 'files_list']:
-            self.mapping[name] = sqlalchemy.types.PickleType
+    mapping = dict(
+        name               = String,
+        version            = String,
+        keywords           = String,
+        home_page          = String,
+        license            = String,
+        author             = String,
+        author_email       = String,
+        maintainer         = String,
+        maintainer_email   = String,
+        osarch             = String,
+        pyver              = String,
+        pkg_version        = String,
+        relpath            = String,
+        tags               = String,
+        original_source    = String,
+        patched_source     = String,
+        
+        summary            = Text,
+        description        = Text,
+        
+        python3            = Boolean,
+        
+        install_requires   = PickleType,
+        files_list         = PickleType,
+    )
+    
     def __call__(self, name):
         try:
             return self.mapping[name]
         except KeyError:
             raise KeyError, \
-                'missing key. add type for "{0}" in __init__'.format(
+                'missing key. add type for "{0}" in self.mapping'.format(
                 name)
 _get_best_column_type = _get_best_column_type()
 
