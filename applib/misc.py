@@ -3,6 +3,8 @@
 
 from os import path
 
+from applib import _cmdln as cmdln
+
 __all__ = ['xjoin', 'existing']
 
 

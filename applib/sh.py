@@ -26,7 +26,7 @@ def unpack_archive(filename, pth='.'):
     """
     from applib import _compression
     
-    assert path.isfile(filename)
+    assert path.isfile(filename), 'not a file: %s' % filename
     assert path.isdir(pth)
     
     for filetype, implementor in _compression.implementors.items():
