@@ -3,16 +3,19 @@ distribute_setup.use_setuptools()
 
 from setuptools import setup, find_packages
 import sys, os
-
-from applib import __version__
+from os import path
 
 
 if sys.version_info[:2] >= (3, 0):
     raise SystemExit, 'applib is not ported to Python 3 yet.'
 
+# make sure that we import applib/ (and not the system-wide one)
+sys.path.insert(0, path.abspath(path.dirname(__file__)))
+import applib
+
 
 setup(name='applib',
-      version=__version__,
+      version=applib.__version__,
       description="Cross-platform application utilities",
       long_description="""\
 """,
