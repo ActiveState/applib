@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-# Copyright (c) 2002-2007 ActiveState Software Inc.
+# Copyright (c) 2002-2009 ActiveState Software Inc.
 # License: MIT (see LICENSE.txt for license details)
 # Author:  Trent Mick
-# Home:    http://trentm.com/projects/cmdln/
 
 """An improvement on Python's standard cmd.py module.
 
@@ -39,6 +38,7 @@ __version_info__ = (1, 2, 0)
 __version__ = '.'.join(map(str, __version_info__))
 
 import os
+from os import path
 import sys
 import re
 import types
@@ -47,6 +47,7 @@ import optparse
 from pprint import pprint
 import sys
 import ConfigParser
+import datetime
 
 
 
@@ -119,8 +120,6 @@ class RawCmdln(cmd.Cmd):
             shell = MySVN()
             retval = shell.main()
             sys.exit(retval)
-
-    See <http://trentm.com/projects/cmdln> for more information.
     """
     name = None      # if unset, defaults basename(sys.argv[0])
     prompt = None    # if unset, defaults to self.name+"> "
@@ -175,12 +174,23 @@ class RawCmdln(cmd.Cmd):
         self.completekey = completekey
         self.cmdlooping = False
 
+    def get_option_defaults(self, cmdname):
+        """Return default values for command options
+        
+        For all options registered for the given command (`cmdname`), return
+        the default values as a dictionary (option name as keys, default value
+        as values)
+        
+        If `cmdname` is None, return default for top-level options
+        """
+        return {}
+    
     def get_optparser(self):
         """Hook for subclasses to set the option parser for the
         top-level command/shell.
 
         NOTE: you may not override this method anymore; cmdln.option decorator
-        can now be used on the class object itself to create global options.
+        can now be used on the class itself to create toplevel options.
 
         This option parser is retrieved and used by `.main()' to handle
         top-level options.
@@ -189,9 +199,9 @@ class RawCmdln(cmd.Cmd):
         can return None to have no options at the top-level. Typically
         an instance of CmdlnOptionParser should be returned.
         """
-        return self.create_global_optparser()
+        return self._create_toplevel_optparser()
 
-    def create_global_optparser(self):
+    def _create_toplevel_optparser(self):
         version = (self.version is not None 
                     and "%s %s" % (self._name_str, self.version)
                     or None)
@@ -199,15 +209,15 @@ class RawCmdln(cmd.Cmd):
 
         # if ``useconfig`` is used, add the -c option to specify extra config
         # file
-        if hasattr(self, 'defaultsconfig'):
-            parser.add_option('-c', '--configfile',
-                              dest='configfile',
-                              help="specify the config file location",
-                              default=None)
+        # if hasattr(self, 'defaultsconfig'):
+        #    parser.add_option('-c', '--configfile',
+        #                      dest='configfile',
+        #                      help="specify the config file location",
+        #                      default=None)
 
-        # add global options
-        if hasattr(self, 'global_optparser_options'):
-            for args, kwargs in self.global_optparser_options:
+        # add toplevel options
+        if hasattr(self, 'toplevel_optparser_options'):
+            for args, kwargs in self.toplevel_optparser_options:
                 parser.add_option(*args, **kwargs)
 
         return parser
@@ -218,15 +228,6 @@ class RawCmdln(cmd.Cmd):
 
         When called `self.options' holds the results of the option parse.
         """
-
-    def set_global_options_defaults_from_config(self):
-        # apply global options' defaults from config files, if any.
-        if hasattr(self, 'defaultsconfig'):
-            if self.options.configfile:
-                self.defaultsconfig.read_only(self.options.configfile)
-            else:
-                self.defaultsconfig.read_all()
-            self.optparser.set_defaults(**self.defaultsconfig.get_global_options())
 
     def main(self, argv=None, loop=LOOP_NEVER):
         """A possible mainline handler for a script, like so:
@@ -270,10 +271,11 @@ class RawCmdln(cmd.Cmd):
                 except StopOptionProcessing, ex:
                     return 0
                 else:
-                    # the user may have specified the -c option; this is why we
-                    # apply global options defaults *here* .. as self.options.configfile
-                    # should be None until this point.
-                    self.set_global_options_defaults_from_config()
+                    # Set default options *after* parsing command line options
+                    # This is an requirement for CmdlnWithConfigParser which
+                    # relies on the -c option which is only parsed in the above
+                    # `try' block
+                    self.optparser.set_defaults(**self.get_option_defaults(None))
                     self.options, args = self.optparser.parse_args(argv[1:])
             else:
                 self.options, args = None, argv[1:]
@@ -657,12 +659,7 @@ class RawCmdln(cmd.Cmd):
         help = help.replace(indent+marker+suffix, block, 1)
         return help
 
-
-    def _help_preprocess_command_list(self, help, cmdname=None):
-        marker = "${command_list}"
-        indent, indent_width = _get_indent(marker, help)
-        suffix = _get_trailing_whitespace(marker, help)
-
+    def _get_cmds_data(self):
         # Find any aliases for commands.
         token2canonical = self._get_canonical_map()
         aliases = {}
@@ -705,7 +702,15 @@ class RawCmdln(cmd.Cmd):
                 #          to_strip, cmdname)
                 doc = doc[len(to_strip):].lstrip()
             linedata.append( (cmdstr, doc) )
+    
+        return linedata
+    
+    def _help_preprocess_command_list(self, help, cmdname=None):
+        marker = "${command_list}"
+        indent, indent_width = _get_indent(marker, help)
+        suffix = _get_trailing_whitespace(marker, help)
 
+        linedata = self._get_cmds_data()
         if linedata:
             subindent = indent + ' '*4
             lines = _format_linedata(linedata, subindent, indent_width+4)
@@ -726,22 +731,26 @@ class RawCmdln(cmd.Cmd):
             for name in dir(aclass):
                 yield (name, getattr(aclass, name))
 
+    def _get_help_names(self):
+        """Return a mapping of help topic name to `.help_*()` method."""
+        # Determine the additional help topics, if any.
+        help_names = {}
+        token2cmdname = self._get_canonical_map()
+        for attrname, attr in self._gen_names_and_attrs():
+            if not attrname.startswith("help_"): continue
+            help_name = attrname[5:]
+            if help_name not in token2cmdname:
+                help_names[help_name] = attr
+        return help_names
+
     def _help_preprocess_help_list(self, help, cmdname=None):
         marker = "${help_list}"
         indent, indent_width = _get_indent(marker, help)
         suffix = _get_trailing_whitespace(marker, help)
 
-        # Determine the additional help topics, if any.
-        helpnames = {}
-        token2cmdname = self._get_canonical_map()
-        for attrname, attr in self._gen_names_and_attrs():
-            if not attrname.startswith("help_"): continue
-            helpname = attrname[5:]
-            if helpname not in token2cmdname:
-                helpnames[helpname] = attr
-
-        if helpnames:
-            linedata = [(n, a.__doc__ or "") for n, a in helpnames.items()]
+        help_names = self._get_help_names()
+        if help_names:
+            linedata = [(n, a.__doc__ or "") for n, a in help_names.items()]
             linedata.sort()
 
             subindent = indent + ' '*4
@@ -1029,66 +1038,13 @@ class SubCmdOptionParser(_OptionParserEx):
     def error(self, msg):
         raise CmdlnUserError(msg)
 
-class CmdlnConfigParser(ConfigParser.SafeConfigParser):
-
-    def __init__(self, filenames, vars, global_section, prefixed_sections, *args, **kwargs):
-        """
-         - filenames: list of config files in that order
-         - global_section: section to use for global options
-         - prefixed_sections: if True, prefix the global section to all other sections
-        """
-        ConfigParser.ConfigParser.__init__(self, *args, **kwargs)
-        self.filenames = filenames
-        self.global_section = global_section
-        self.prefixed_sections = prefixed_sections
-        self.vars = vars
-
-    def read_all(self):
-        ConfigParser.ConfigParser.read(self, self.filenames)
-
-    def read_only(self, configfile):
-        if not os.path.exists(configfile):
-            raise CmdlnUserError, 'no such file: %s' % configfile
-        ConfigParser.ConfigParser.read(self, configfile)
-
-    def get_global_options(self):
-        """Return a dict of all global options"""
-        return self.get_local_options(self.global_section)
-
-    def get_local_options(self, section):
-        """Return a dict of all options in the given ``section``"""
-        if self.prefixed_sections:
-            section = '%s:%s' % (self.global_section, section)
-            
-        try:
-            return dict(self.items(section, vars=self.vars))
-        except ConfigParser.NoSectionError:
-            return {}
         
-
-def useconfig(filenames, vars=None, global_section='cmdln', prefixed_sections=False):
-    """Decorator to specify the config file that would contain default values.
-
-    Example:
-        @cmdln.useconfig(filenames = ['/etc/myapp.conf', ...],
-                         global_section = 'main',   # optional
-                         prefixed_sections = False) # optional
-    """
-    def decorator(klass):
-        assert _forgiving_issubclass(klass, Cmdln)
-        assert not hasattr(klass, 'defaultsconfig'), 'did you call "useconfig" twice?'
-        klass.defaultsconfig = CmdlnConfigParser(
-            filenames, vars or {}, global_section, prefixed_sections)
-        return klass
-    return decorator
-
-
 def option(*args, **kwargs):
     """Decorator to add an option to the optparser argument of a Cmdln
     subcommand
 
-    To add a global option, apply the decorator on the class itself. (see p4.py
-    for an example)
+    To add a toplevel option, apply the decorator on the class itself. (see
+    p4.py for an example)
     
     Example:
         @cmdln.option("-E", dest="environment_path")
@@ -1104,10 +1060,10 @@ def option(*args, **kwargs):
         method.optparser.add_option(*args, **kwargs)
         return method
     def decorate_class(klass):
-        """store global options"""
+        """store toplevel options"""
         assert _forgiving_issubclass(klass, Cmdln)
-        _inherit_attr(klass, "global_optparser_options", [], cp=lambda l: l[:])
-        klass.global_optparser_options.append( (args, kwargs) )
+        _inherit_attr(klass, "toplevel_optparser_options", [], cp=lambda l: l[:])
+        klass.toplevel_optparser_options.append( (args, kwargs) )
         return klass
         
     #XXX Is there a possible optimization for many options to not have a
@@ -1146,8 +1102,8 @@ class Cmdln(RawCmdln):
             sys.exit(retval)
 
     'Cmdln' extends 'RawCmdln' by providing optparse option processing
-    integration.  See this class' _dispatch_cmd() docstring and
-    <http://trentm.com/projects/cmdln> for more information.
+    integration.  See this class' _dispatch_cmd() docstring and general
+    cmdln document for more information.
     """
 
     def _dispatch_cmd(self, handler, argv):
@@ -1199,9 +1155,7 @@ class Cmdln(RawCmdln):
 
             # apply subcommand options' defaults from config files, if any.
             subcmd = handler.__name__.split('do_', 1)[1]
-            if hasattr(self, 'defaultsconfig'):
-                optparser.set_defaults(
-                    **self.defaultsconfig.get_local_options(subcmd))
+            optparser.set_defaults(**self.get_option_defaults(subcmd))
             
             optparser.set_cmdln_info(self, argv[0])
             try:
@@ -1244,7 +1198,100 @@ class Cmdln(RawCmdln):
             raise CmdlnError("incorrect argcount for %s(): takes %d, must "
                              "take 2 for 'argv' signature or 3+ for 'opts' "
                              "signature" % (handler.__name__, co_argcount))
-        
+
+
+
+#---- support for generating `man` page output from a Cmdln class
+
+def man_sections_from_cmdln(inst, summary=None, description=None, author=None):
+    """Return man page sections appropriate for the given Cmdln instance.
+    Join these sections for man page content.
+    
+    The man page sections generated are:
+        NAME
+        SYNOPSIS
+        DESCRIPTION  (if `description` is given)
+        OPTIONS
+        COMMANDS
+        HELP TOPICS (if any) 
+    
+    @param inst {Cmdln} Instance of Cmdln subclass for which to generate
+        man page content.
+    @param summary {str} A one-liner summary of the command.
+    @param description {str} A description of the command. If given,
+        it will be used for a "DESCRIPTION" section.
+    @param author {str} The author name and email for the AUTHOR secion
+        of the man page.
+    @raises {ValueError} if man page content cannot be generated for the
+        given class.
+    """
+    if not inst.__class__.name:
+        raise ValueError("cannot generate man page content: `name` is not "
+            "set on class %r" % inst.__class__)
+    data = {
+        "name": inst.name,
+        "ucname": inst.name.upper(),
+        "date": datetime.date.today().strftime("%b %Y"), 
+        "cmdln_version": __version__,
+        "version_str": inst.version and " %s" % inst.version or "",
+        "summary_str": summary and r" \- %s" % summary or "",
+    }
+    
+    sections = []
+    sections.append('.\\" Automatically generated by cmdln %(cmdln_version)s\n'
+        '.TH %(ucname)s "1" "%(date)s" "%(name)s%(version_str)s" "User Commands"\n'
+        % data)
+    sections.append(".SH NAME\n%(name)s%(summary_str)s\n" % data)
+    sections.append(_dedent(r"""
+        .SH SYNOPSIS
+        .B %(name)s
+        [\fIGLOBALOPTS\fR] \fISUBCOMMAND \fR[\fIOPTS\fR] [\fIARGS\fR...]
+        .br
+        .B %(name)s
+        \fIhelp SUBCOMMAND\fR
+        """) % data)
+    if description:
+        sections.append(".SH DESCRIPTION\n%s\n" % description)
+
+    section = ".SH OPTIONS\n"
+    if not hasattr(inst, "optparser") is None:
+        #HACK: In case `.main()` hasn't been run.
+        inst.optparser = inst.get_optparser()
+    lines = inst._help_preprocess("${option_list}", None).splitlines(False)
+    for line in lines[1:]:
+        line = line.lstrip()
+        if not line:
+            continue
+        section += ".TP\n"
+        opts, desc = line.split('  ', 1)
+        section += ".B %s\n" % opts
+        section += "%s\n" % _dedent(desc.lstrip(), skip_first_line=True)
+    sections.append(section)
+
+    section = ".SH COMMANDS\n"
+    cmds = inst._get_cmds_data()
+    for cmdstr, doc in cmds:
+        cmdname = cmdstr.split(' ')[0]  # e.g. "commit (ci)" -> "commit"
+        doc = inst._help_reindent(doc, indent="")
+        doc = inst._help_preprocess(doc, cmdname)
+        doc = doc.rstrip() + "\n"  # trim down trailing space
+        section += '.PP\n.SS %s\n%s\n' % (cmdstr, doc)
+    sections.append(section)
+    
+    help_names = inst._get_help_names()
+    if help_names:
+        section = ".SH HELP TOPICS\n"
+        for help_name, help_meth in sorted(help_names.items()):
+            help = help_meth(inst)
+            help = inst._help_reindent(help, indent="")
+            section += '.PP\n.SS %s\n%s\n' % (help_name, help)
+        sections.append(section)
+
+    if author:
+        sections.append(".SH AUTHOR\n%s\n" % author)
+
+    return sections
+
 
 
 #---- internal support functions
@@ -1285,17 +1332,17 @@ def _format_linedata(linedata, indent, indent_width):
         "indent_width" is a number of columns by which the
             formatted data will be indented when printed.
 
-    The <item-display-string> column is held to 15 columns.
+    The <item-display-string> column is held to 30 columns.
     """
     lines = []
     WIDTH = 78 - indent_width
     SPACING = 2
     NAME_WIDTH_LOWER_BOUND = 13
-    NAME_WIDTH_UPPER_BOUND = 16
+    NAME_WIDTH_UPPER_BOUND = 30
     NAME_WIDTH = max([len(s) for s,d in linedata])
     if NAME_WIDTH < NAME_WIDTH_LOWER_BOUND:
         NAME_WIDTH = NAME_WIDTH_LOWER_BOUND
-    else:
+    elif NAME_WIDTH > NAME_WIDTH_UPPER_BOUND:
         NAME_WIDTH = NAME_WIDTH_UPPER_BOUND
 
     DOC_WIDTH = WIDTH - NAME_WIDTH - SPACING
@@ -1586,7 +1633,6 @@ def _dedent(text, tabsize=8, skip_first_line=False):
     _dedentlines(lines, tabsize=tabsize, skip_first_line=skip_first_line)
     return ''.join(lines)
 
-
 def _get_indent(marker, s, tab_width=8):
     """_get_indent(marker, s, tab_width=8) ->
         (<indentation-of-'marker'>, <indentation-width>)"""
@@ -1726,3 +1772,53 @@ if __name__ == "__main__" and len(sys.argv) == 6:
     for cpln in _get_bash_cplns(*sys.argv[1:]):
         print cpln
 
+
+
+## -- contrib --
+
+@option("-c", "--configfile", dest="configfile", default=None,
+       help='Configuration file to read options from')
+class CmdlnWithConfigParser(Cmdln):
+    """Cmdln with configparser support
+    
+    Add a new option -c --configfile for reading config file; and set
+    default values for both toplevel and command-specific options.
+    
+    See examples/cfgexample.py
+    """
+    
+    class NoConfigFile(Exception): pass
+    
+    def __init__(self, default_configfile, *args, **kwargs):
+        Cmdln.__init__(self, *args, **kwargs)
+        self._cfgparser = None
+        self._default_configfile = default_configfile
+        
+    def get_optparser(self):
+        parser = Cmdln.get_optparser(self)
+        parser.set_default('configfile', self._default_configfile)
+        return parser
+    
+    def _load_config(self):
+        if not self._cfgparser:
+            if self.options.configfile:
+                self._cfgparser = ConfigParser.SafeConfigParser()
+                if not path.exists(self.options.configfile):
+                    raise CmdlnUserError, 'config file "%s" does not exist' % \
+                         self.options.configfile
+                self._cfgparser.read(self.options.configfile)
+            else:
+                raise self.NoConfigFile
+    
+    def get_option_defaults(self, cmd):
+        try:
+            self._load_config()
+        except self.NoConfigFile:
+            return {}
+        else:
+            section = cmd or 'cmdln'
+            try:
+                return dict(self._cfgparser.items(section))
+            except ConfigParser.NoSectionError:
+                return {}
+        

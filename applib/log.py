@@ -17,7 +17,7 @@ from applib import sh, textui, _cmdln as cmdln
 
 @cmdln.option('-v', '--verbose', action="count", dest='verbosity_level',
               help='-v will show tracebacks; -vv also debug messages')
-class LogawareCmdln(cmdln.Cmdln):
+class LogawareCmdln(cmdln.CmdlnWithConfigParser):
     """A Cmdln class that integrates with this modules's functionality
 
     1. Add -v and -vv global options: show tracebacks when sub commands throw
@@ -32,7 +32,7 @@ class LogawareCmdln(cmdln.Cmdln):
         Arguments:
          - install_console: install console handlers in logger
         """
-        cmdln.Cmdln.__init__(self, *args, **kwargs)
+        cmdln.CmdlnWithConfigParser.__init__(self, *args, **kwargs)
         self.__initialized = False
         self.__install_console = install_console
 
