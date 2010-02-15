@@ -1789,7 +1789,7 @@ class CmdlnWithConfigParser(Cmdln):
     
     class NoConfigFile(Exception): pass
     
-    def __init__(self, default_configfile, *args, **kwargs):
+    def __init__(self, default_configfile=None, *args, **kwargs):
         Cmdln.__init__(self, *args, **kwargs)
         self._cfgparser = None
         self._default_configfile = default_configfile
