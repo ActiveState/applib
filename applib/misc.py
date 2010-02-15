@@ -30,7 +30,7 @@ def require_option(options, option_name, details=None):
     """
     option_var_name = option_name.replace('-', '_')
     if getattr(options, option_var_name) is None:
-        msg = 'required option "--$s" is missing' % option_name
+        msg = 'required option "--{0}" is missing'.format(option_name)
         if details:
             msg = '%s (%s)' % (msg, details)
         raise cmdln.CmdlnUserError, details
