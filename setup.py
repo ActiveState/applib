@@ -35,7 +35,7 @@ setup(name='applib',
       url='http://bitbucket.org/srid/applib',
       license='MIT',
       packages=find_packages(exclude=[
-          'distribute_setup', 'examples', 'tests']),
+          'examples', 'tests']),
       include_package_data=True,
       zip_safe=True,
       install_requires=[
