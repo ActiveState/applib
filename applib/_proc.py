@@ -62,6 +62,11 @@ def run(cmd, merge_streams=False, timeout=None, env=None):
 
     Return (stdout, stderr)
     """
+    # Fix for cmd.exe quote issue. See comment #3 and #4 in
+    # http://firefly.activestate.com/sridharr/pypm/ticket/126#comment:3
+    if sys.platform.startswith('win') and cmd.startswith('"'):
+        cmd = '"{0}"'.format(cmd)
+
     # redirect stdout and stderr to temporary *files*
     with nested(TemporaryFile(), TemporaryFile()) as (outf, errf):
         p = subprocess.Popen(cmd, env=env, shell=True, stdout=outf,
