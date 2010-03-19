@@ -145,6 +145,26 @@ def safe_output():
     clear_progress_bar()
     yield
     redraw_progress_bar()
+    
+    
+def askyesno(question, default):
+    """Ask (Y/N) type of question to the user"""
+    assert isinstance(default, bool), '"default" must be a boolean'
+    
+    s = '{0} ({1}/{2}) '.format(
+        question,
+        default and 'Y' or 'y',
+        default and 'n' or 'N')
+
+    while True:
+        val = raw_input(s).strip().lower()
+        
+        if val == '':
+            return default
+        elif val in ('y', 'yes', 'ok'):
+            return True
+        elif val in ('n', 'no'):
+            return False
 
 
 # This function was written by Alex Martelli

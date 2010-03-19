@@ -1,0 +1,11 @@
+News
+====
+
+1.0.0c2
+-------
+
+*Release date: 19-Mar-2010*
+
+- Add applib.textui:askyesno
+
+
