@@ -11,6 +11,10 @@ from os import path
 if sys.version_info[:2] >= (3, 0):
     raise SystemExit, 'applib is not ported to Python 3 yet.'
 
+here = os.path.abspath(path.dirname(__file__))
+README = open(path.join(here, 'README.txt')).read()
+NEWS = open(path.join(here, 'NEWS.txt')).read()
+
 # make sure that we import applib/ (and not the system-wide one)
 sys.path.insert(0, path.abspath(path.dirname(__file__)))
 import applib
@@ -19,10 +23,9 @@ import applib
 setup(name='applib',
       version=applib.__version__,
       description="Cross-platform application utilities",
-      long_description="""\
-""",
+      long_description=README + '\n\n' + NEWS,
       classifiers=[
-          'Development Status :: 3 - Alpha',
+          'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: MIT License',
           'Operating System :: OS Independent',
