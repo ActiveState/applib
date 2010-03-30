@@ -4,7 +4,7 @@ News
 1.0.0c3
 -------
 
-*Release date: UNKNOWN*
+*Release date: 30-Mar-2010*
 
 - Fix: require_option was throwing Exception with empty message
 
