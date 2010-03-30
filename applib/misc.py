@@ -29,11 +29,13 @@ def require_option(options, option_name, details=None):
     CmdlnUserError: required option, --foo-bar, is mising
     """
     option_var_name = option_name.replace('-', '_')
+    if not hasattr(options, option_var_name):
+        raise ValueError, "require_option: undefined option '%s'" % option_var_name
     if getattr(options, option_var_name) is None:
         msg = 'required option "--{0}" is missing'.format(option_name)
         if details:
             msg = '%s (%s)' % (msg, details)
-        raise cmdln.CmdlnUserError, details
+        raise cmdln.CmdlnUserError, msg
     
     
 def _hack_unix2win_path_conversion(cmdln_options, option_names):

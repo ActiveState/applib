@@ -3,6 +3,7 @@
 import logging
 
 from applib.base import Cmdln, Application
+from applib.misc import require_option
 from applib import textui, _cmdln as cmdln
 
 LOG = logging.getLogger(__name__)
@@ -10,11 +11,12 @@ LOG = logging.getLogger(__name__)
 application = Application('demo-app', 'CompanyNameHere', '1.0.1')
 
 
+@cmdln.option('', '--dummy', action='store_true')
 class Commands(Cmdln):
     name = "demo-app"
 
     def initialize(self):
-        pass
+        require_option(self.options, 'dummy')
 
     @cmdln.alias('cd')
     @cmdln.option('-t', '--show-time', action='store_true',

@@ -1,6 +1,13 @@
 News
 ====
 
+1.0.0c3
+-------
+
+*Release date: UNKNOWN*
+
+- Fix: require_option was throwing Exception with empty message
+
 1.0.0c2
 -------
 
