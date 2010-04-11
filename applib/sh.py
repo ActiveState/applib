@@ -130,7 +130,7 @@ def cd(pth):
 def tmpdir(prefix='tmp-', suffix=''):
     """__with__ context to work in a temporary working directory
     
-    Temporary directory will be created unless an exception was raised. During
+    Temporary directory will be deleted unless an exception was raised. During
     the context, CWD will be changed to the temporary directory.
     """
     d = tempfile.mkdtemp(prefix=prefix, suffix=suffix)
