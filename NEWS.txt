@@ -4,7 +4,9 @@ News
 1.0.0c4
 -------
 
-*Release date: UNRELEASED*
+*Release date: 13-Apr-2010*
+
+- Fix a NameError with _proc.RunTimedout 
 
 
 1.0.0c3

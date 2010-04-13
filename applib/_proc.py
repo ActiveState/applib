@@ -45,7 +45,7 @@ class RunTimedout(RunError):
             'stderr:\n{0}'.format(stderr),
             'stdout:\n{0}'.format(stdout),
             ])
-        super(TimeoutError, self).__init__(msg)
+        super(RunTimedout, self).__init__(msg)
 
     
 # TODO: support for incremental results (sometimes a process run for a few
