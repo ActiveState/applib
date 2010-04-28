@@ -91,7 +91,7 @@ class SimpleDatabase(object):
                 assert exists(dirname(self.path)), 'missing: ' + dirname(self.path)
                 self.metadata.create_all(self.engine)
             else:
-                raise self.DoesNotExist, path
+                raise self.DoesNotExist(path)
 
     def reset(self):
         """Reset the database
@@ -227,9 +227,9 @@ class _get_best_column_type():
         try:
             return self.mapping[name]
         except KeyError:
-            raise KeyError, \
+            raise KeyError(
                 'missing key. add type for "{0}" in self.mapping'.format(
-                name)
+                name))
 _get_best_column_type = _get_best_column_type()
 
 

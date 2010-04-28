@@ -1,6 +1,13 @@
 News
 ====
 
+1.0.0c6
+-------
+
+*Release date: 28-Apr-2010*
+
+- Fixed more modules supporting Python 3
+
 1.0.0c5
 -------
 

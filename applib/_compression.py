@@ -28,23 +28,25 @@ class ZippedFile(CompressedFile):
             try:
                 f.extractall()
                 return _possible_dir_name(f.namelist())
-            except OSError, e:
+            except OSError:
+                _, e = sys.exc_info()
                 if e.errno == 17:
                     # http://bugs.python.org/issue6510
-                    raise sh.PackError, e
+                    raise sh.PackError(e)
                 # http://bugs.python.org/issue6609
                 if sys.platform.startswith('win'):
                     if isinstance(e, WindowsError) and e.winerror == 267:
-                        raise sh.PackError, ('uses Windows special name (%s)' % e)
+                        raise sh.PackError('uses Windows special name (%s)' % e)
                 raise
             finally:
                 f.close()
-        except (zipfile.BadZipfile, zipfile.LargeZipFile), e:
-            raise sh.PackError, e
+        except (zipfile.BadZipfile, zipfile.LargeZipFile):
+            _, e = sys.exc_info()
+            raise sh.PackError(e)
 
     @classmethod
     def pack(cls, paths, file):
-        raise NotImplementedError, 'pack: zip files not supported yet'
+        raise NotImplementedError('pack: zip files not supported yet')
     
 
 class TarredFile(CompressedFile):
@@ -67,12 +69,14 @@ class TarredFile(CompressedFile):
                 return _possible_dir_name(f.getnames())
             finally:
                 f.close()
-        except tarfile.TarError, e:
-            raise sh.PackError, e
-        except IOError, e:
+        except tarfile.TarError:
+            _, e = sys.exc_info()
+            raise sh.PackError(e)
+        except IOError:
+            _, e = sys.exc_info()
             # see http://bugs.python.org/issue6584
             if 'CRC check failed' in str(e):
-                raise sh.PackError, e
+                raise sh.PackError(e)
             else:
                 raise
             
@@ -88,7 +92,7 @@ class TarredFile(CompressedFile):
 
     def _get_mode(self):
         """Return the mode for this tarfile"""
-        raise NotImplementedError
+        raise NotImplementedError()
 
 
 class GzipTarredFile(TarredFile):
@@ -127,14 +131,14 @@ def _possible_dir_name(contents):
     """The directory where the the files are possibly extracted."""
     top_level_dirs = _find_top_level_directories(contents, sep='/')
     if len(top_level_dirs) == 0:
-        raise sh.PackError, 'has no contents'
+        raise sh.PackError('has no contents')
     elif len(top_level_dirs) > 1:
-        raise MultipleTopLevels, 'more than one top levels: %s' % top_level_dirs
+        raise MultipleTopLevels('more than one top levels: %s' % top_level_dirs)
     d = path.abspath(top_level_dirs[0])
     assert path.exists(d), 'missing dir: %s' % d
     if not path.isdir(d):
         # eg: http://pypi.python.org/pypi/DeferArgs/0.4
-        raise SingleFile, 'contains a single file: %s' % d
+        raise SingleFile('contains a single file: %s' % d)
     return d
 
 
