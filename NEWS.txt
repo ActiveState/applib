@@ -1,6 +1,13 @@
 News
 ====
 
+1.0.0c7
+-------
+
+*Release date: 28-Apr-2010*
+
+- Updated applib._cmdln with cmdln:^/branches/cfg
+
 1.0.0c6
 -------
 
