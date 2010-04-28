@@ -15,6 +15,15 @@ from contextlib import contextmanager
 from applib import sh, textui, _cmdln as cmdln
 
 
+if sys.hexversion > 0x03000000:
+    def unicode_literal(s):
+        return s # strings are unicode by default on py3
+else:
+    from io import open
+    def unicode_literal(s):
+        return s.decode('utf-8')
+
+
 @cmdln.option('-v', '--verbose', action="count", dest='verbosity_level',
               help='-v will show tracebacks; -vv also debug messages')
 class LogawareCmdln(cmdln.CmdlnWithConfigParser):
@@ -38,7 +47,7 @@ class LogawareCmdln(cmdln.CmdlnWithConfigParser):
 
     def initialize(self):
         """This method is called by ``bootstrapped`` - once and only once."""
-        raise NotImplementedError, 'must be defined by the derived class'
+        raise NotImplementedError('must be defined by the derived class')
 
     @contextmanager
     def bootstrapped(self):
@@ -70,11 +79,12 @@ class LogawareCmdln(cmdln.CmdlnWithConfigParser):
     def __run_safely(self, l):
         try:
             yield
-        except KeyboardInterrupt, e:
+        except KeyboardInterrupt:
             # user presses Ctrl-C to terminate the program
             l.info('') # print a new-line for the shell prompt's sake
             sys.exit(5)
-        except Exception, e:
+        except Exception:
+            _, e = sys.exc_info()
             if self.__install_console:
                 # setup_console handles all exceptions; let it do so by calling
                 # log.exception and exitting immediately.
@@ -170,7 +180,8 @@ def wrapped(l):
     """'With' context to intercept and log any exceptions raised"""
     try:
         yield
-    except Exception, e:
+    except Exception:
+        _, e = sys.exc_info()
         l.exception(e)
         raise
 
@@ -185,7 +196,8 @@ def runonconsole(l):
     """
     try:
         yield
-    except Exception, e:
+    except Exception:
+        _, e = sys.exc_info()
         l.exception(e)
         sys.exit(1)
     sys.exit(0)
@@ -215,9 +227,9 @@ def _begin_log_section(logfile):
     Also write the current datetime
     """
     LINE_BUFFERED=1
-    with open(logfile, 'a', LINE_BUFFERED) as f:
-        f.write('\n') # sections are separated by newline
-        f.write('{0}\n'.format(datetime.now()).encode('utf-8'))
+    with open(logfile, 'a', LINE_BUFFERED, encoding='utf-8') as f:
+        f.write(unicode_literal('\n')) # sections are separated by newline
+        f.write(unicode_literal('{0}\n'.format(datetime.now())))
 
 
 class ConsoleHandler(logging.StreamHandler):
@@ -253,8 +265,8 @@ class ConsoleHandler(logging.StreamHandler):
             else:
                 self.__emit(record, sys.stderr)
         else:
-            raise NotImplementedError, \
-                "don't know about level: {0}".format(record.levelno)
+            raise NotImplementedError(
+                "don't know about level: {0}".format(record.levelno))
 
     def __emit(self, record, strm):
         # override handler stream with ours (which could stdout or stderr)

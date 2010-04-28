@@ -32,9 +32,9 @@ class Commands(Cmdln):
             now = datetime.now()
             LOG.debug('datetime.now = %s', now)
             if opts.show_time:
-                print now
+                print(now)
             else:
-                print now.date()
+                print(now.date())
                 
     def do_makeerror(self, subcmd, opts):
         """${cmd_name}: Make an error. Use -v to see full traceback

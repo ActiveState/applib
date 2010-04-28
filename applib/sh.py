@@ -34,7 +34,7 @@ def unpack_archive(filename, pth='.'):
             with cd(pth):
                 return (implementor(filename).extract(), filetype)
     else:
-        raise PackError, 'unknown compression format: ' + filename
+        raise PackError('unknown compression format: ' + filename)
 
 
 def pack_archive(filename, files, pwd, filetype="tgz"):
@@ -163,12 +163,14 @@ def _copytree(src, dst, symlinks=False, ignore=None, copyperms=True):
             else:
                 shutil.copy(srcname, dstname)
             # XXX What about devices, sockets etc.?
-        except (IOError, os.error), why:
+        except (IOError, os.error):
+            _, why = sys.exc_info()
             raise
             errors.append((srcname, dstname, str(why)))
         # catch the Error from the recursive copytree so that we can
         # continue with other files
-        except shutil.Error, err:
+        except shutil.Error:
+            _, err = sys.exec_info()
             errors.extend(err.args[0])
     if copyperms:
         try:
@@ -176,10 +178,11 @@ def _copytree(src, dst, symlinks=False, ignore=None, copyperms=True):
         except WindowsError:
             # can't copy file access times on Windows
             pass
-        except OSError, why:
+        except OSError:
+            _, why = sys.exec_info()
             errors.extend((src, dst, str(why)))
     if errors:
-        raise shutil.Error, errors
+        raise shutil.Error(errors)
     
 
 # WindowsError is not available on other platforms

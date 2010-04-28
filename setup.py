@@ -8,9 +8,6 @@ import sys, os
 from os import path
 
 
-if sys.version_info[:2] >= (3, 0):
-    raise SystemExit, 'applib is not ported to Python 3 yet.'
-
 here = os.path.abspath(path.dirname(__file__))
 README = open(path.join(here, 'README.txt')).read()
 NEWS = open(path.join(here, 'NEWS.txt')).read()

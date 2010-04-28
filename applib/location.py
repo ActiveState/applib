@@ -34,7 +34,7 @@ class Error(Exception):
 
 
 def user_data_dir(appname, owner=None, version=None):
-    """Return full path to the user-specific data dir for this application.
+    r"""Return full path to the user-specific data dir for this application.
     
         "appname" is the name of application.
         "owner" (only required and used on Windows) is the name of the
@@ -117,7 +117,7 @@ def site_data_dir(appname, owner=None, version=None):
 
 
 def user_cache_dir(appname, owner=None, version=None):
-    """Return full path to the user-specific cache dir for this application.
+    r"""Return full path to the user-specific cache dir for this application.
     
         "appname" is the name of application.
         "owner" (only required and used on Windows) is the name of the
@@ -222,7 +222,7 @@ if sys.platform == "win32":
 #---- self test code
 
 if __name__ == "__main__":
-    print "applib: user data dir:", user_data_dir("Komodo", "ActiveState")
-    print "applib: site data dir:", site_data_dir("Komodo", "ActiveState")
-    print "applib: user cache dir:", user_cache_dir("Komodo", "ActiveState")
+    print("applib: user data dir: %s" % user_data_dir("Komodo", "ActiveState"))
+    print("applib: site data dir:" % site_data_dir("Komodo", "ActiveState"))
+    print("applib: user cache dir:" % user_cache_dir("Komodo", "ActiveState"))
 

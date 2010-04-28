@@ -195,7 +195,7 @@ def colprint(table, totwidth=None):
             break
     # and finally, the output phase!
     for row in padded:
-        s = ''.join([u'%*s' % (-w, i[:w])
+        s = ''.join(['%*s' % (-w, i[:w])
                      for w, i in zip(widths, row)])
         LOG.info(s)
 
@@ -224,7 +224,7 @@ def longrun(log, finalfn=lambda: None):
         yield
     except KeyboardInterrupt:
         log.info('*** interrupted by user - Ctrl+c ***')
-        raise SystemExit, 3
+        raise SystemExit(3)
     finally:
         finalfn()
         end_time = datetime.now()
@@ -285,7 +285,7 @@ def _byteshr(bytes):
         if bytes < 1024.0:
             return "%3.1f%s" % (bytes, x)
         bytes /= 1024.0
-    raise ValueError, 'cannot find human-readable version'
+    raise ValueError('cannot find human-readable version')
 
 
 def _calculate_percent(numerator, denominator):
@@ -294,7 +294,7 @@ def _calculate_percent(numerator, denominator):
         if numerator == 0:
             return 100
         else:
-            raise ValueError, 'denominator cannot be zero'
+            raise ValueError('denominator cannot be zero')
 
     return int(round( numerator / float(denominator) * 100 ))
 
