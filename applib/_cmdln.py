@@ -289,7 +289,7 @@ class RawCmdln(cmd.Cmd):
                 self.options, args = None, argv[1:]
             self.postoptparse()
         except CmdlnUserError:
-            _, ex = sys.exc_info()
+            _, ex, _ = sys.exc_info()
             msg = "%s: %s\nTry '%s help' for info.\n"\
                   % (self.name, ex, self.name)
             self.stderr.write(self._str(msg))
@@ -1187,7 +1187,7 @@ class Cmdln(RawCmdln):
             try:
                 return handler(argv[0], opts, *args)
             except TypeError:
-                _, ex = sys.exc_info()
+                _, ex, _ = sys.exc_info()
                 # Some TypeError's are user errors:
                 #   do_foo() takes at least 4 arguments (3 given)
                 #   do_foo() takes at most 5 arguments (6 given)
@@ -1743,7 +1743,7 @@ if __name__ == "__main__" and len(sys.argv) == 6:
         try:
             script = _module_from_path(script_path)
         except ImportError:
-            _, ex = sys.exc_info()
+            _, ex, _ = sys.exc_info()
             _log("error importing `%s': %s" % (script_path, ex))
             return []
         shell = getattr(script, class_name)()

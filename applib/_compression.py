@@ -29,7 +29,7 @@ class ZippedFile(CompressedFile):
                 f.extractall()
                 return _possible_dir_name(f.namelist())
             except OSError:
-                _, e = sys.exc_info()
+                _, e, _ = sys.exc_info()
                 if e.errno == 17:
                     # http://bugs.python.org/issue6510
                     raise sh.PackError(e)
@@ -41,7 +41,7 @@ class ZippedFile(CompressedFile):
             finally:
                 f.close()
         except (zipfile.BadZipfile, zipfile.LargeZipFile):
-            _, e = sys.exc_info()
+            _, e, _ = sys.exc_info()
             raise sh.PackError(e)
 
     @classmethod
@@ -70,10 +70,10 @@ class TarredFile(CompressedFile):
             finally:
                 f.close()
         except tarfile.TarError:
-            _, e = sys.exc_info()
+            _, e, _ = sys.exc_info()
             raise sh.PackError(e)
         except IOError:
-            _, e = sys.exc_info()
+            _, e, _ = sys.exc_info()
             # see http://bugs.python.org/issue6584
             if 'CRC check failed' in str(e):
                 raise sh.PackError(e)

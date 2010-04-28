@@ -84,7 +84,7 @@ class LogawareCmdln(cmdln.CmdlnWithConfigParser):
             l.info('') # print a new-line for the shell prompt's sake
             sys.exit(5)
         except Exception:
-            _, e = sys.exc_info()
+            _, e, _ = sys.exc_info()
             if self.__install_console:
                 # setup_console handles all exceptions; let it do so by calling
                 # log.exception and exitting immediately.
@@ -181,7 +181,7 @@ def wrapped(l):
     try:
         yield
     except Exception:
-        _, e = sys.exc_info()
+        _, e, _ = sys.exc_info()
         l.exception(e)
         raise
 
@@ -197,7 +197,7 @@ def runonconsole(l):
     try:
         yield
     except Exception:
-        _, e = sys.exc_info()
+        _, e, _ = sys.exc_info()
         l.exception(e)
         sys.exit(1)
     sys.exit(0)

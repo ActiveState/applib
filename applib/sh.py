@@ -164,7 +164,7 @@ def _copytree(src, dst, symlinks=False, ignore=None, copyperms=True):
                 shutil.copy(srcname, dstname)
             # XXX What about devices, sockets etc.?
         except (IOError, os.error):
-            _, why = sys.exc_info()
+            _, why, _ = sys.exc_info()
             raise
             errors.append((srcname, dstname, str(why)))
         # catch the Error from the recursive copytree so that we can
