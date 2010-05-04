@@ -8,6 +8,10 @@ e:
 
 installdeps:
 	e/bin/python setup.py develop
+	e/bin/pip install unittest2
+
+test:
+	e/bin/unit2 discover
 
 clean:
 	rm -rf e
