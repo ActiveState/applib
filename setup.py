@@ -1,8 +1,3 @@
-
-# http://bitbucket.org/srid/modern-package-template/issue/9/distribute_setup-should-not-be-used#comment-139503
-# import distribute_setup
-# distribute_setup.use_setuptools()
-
 from setuptools import setup, find_packages
 import sys, os
 from os import path
