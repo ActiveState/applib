@@ -3,8 +3,9 @@ PYTHON := python
 all: e installdeps
 
 e:
-	virtualenv --distribute --python=${PYTHON} e
-	e/bin/python -m activestate
+	virtualenv --no-site-packages --distribute --python=${PYTHON} e
+	e/bin/python -c 'assert "ActiveState" in str(__builtins__.copyright)'
+	# e/bin/python -m activestate
 
 installdeps:
 	e/bin/python setup.py develop
