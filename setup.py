@@ -14,14 +14,14 @@ import applib
 
 setup(name='applib',
       version=applib.__version__,
-      description="Cross-platform application utilities",
+      description="Cross-platform application utilities in Python",
       long_description=README + '\n\n' + NEWS,
       classifiers=[
-          'Development Status :: 4 - Beta',
+          'Development Status :: 5 - Production/Stable',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: MIT License',
           'Operating System :: OS Independent',
-          'Programming Language :: Python :: 2.6',
+          'Programming Language :: Python :: 2.6', # minimum supported = 2.6
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
           'Topic :: Software Development :: Libraries :: Python Modules',
@@ -29,7 +29,7 @@ setup(name='applib',
       ],
       keywords='',
       author='Sridhar Ratnakumar',
-      author_email='srid@nearfar.org',
+      author_email='sridhar.ratna@gmail.com',
       url='http://bitbucket.org/srid/applib',
       license='MIT',
       packages=find_packages(exclude=[
