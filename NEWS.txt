@@ -1,6 +1,13 @@
 News
 ====
 
+1.0.0c9
+-------
+
+*Release date: 25-May-2010*
+
+- Fixed ``UnboundLocalError`` with 'sys' in _cmdln.py#L1190
+
 1.0.0c8
 -------
 

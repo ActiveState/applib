@@ -36,14 +36,14 @@ class Commands(Cmdln):
             else:
                 print(now.date())
                 
-    def do_makeerror(self, subcmd, opts):
+    def do_makeerror(self, subcmd, opts, what):
         """${cmd_name}: Make an error. Use -v to see full traceback
         
         ${cmd_usage}
         ${cmd_option_list}
         """
         with self.bootstrapped():
-            LOG.debug('About to make an error!')
+            LOG.debug('About to make an error! %s', what)
             1/0
             
     def do_multable(self, subcmd, opts, number=10, times=25):
