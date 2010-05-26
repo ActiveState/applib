@@ -16,6 +16,7 @@ and we may change the api/behaviour. Hence, it makes sense to keep it as an
 internal module.
 """
 
+import sys
 import os
 from os.path import exists, dirname
 from contextlib import contextmanager
@@ -238,6 +239,8 @@ def _remove_unicode_keys(dictobj):
 
     workaround for <http://bugs.python.org/issue2646>
     """
+    if sys.version_info[:2] >= (3, 0): return dictobj
+
     assert isinstance(dictobj, dict)
 
     newdict = {}
