@@ -25,6 +25,7 @@ else:
 
 
 @cmdln.option('-v', '--verbose', action="count", dest='verbosity_level',
+              default=0,
               help='-v will show tracebacks; -vv also debug messages')
 class LogawareCmdln(cmdln.CmdlnWithConfigParser):
     """A Cmdln class that integrates with this modules's functionality
@@ -67,6 +68,8 @@ class LogawareCmdln(cmdln.CmdlnWithConfigParser):
             # install console (if required) and call the `initialize` method
             # once.
             if self.__install_console:
+                assert type(self.options.verbosity_level) is int, \
+                        'un-int type for value: %s' % self.options.verbosity_level
                 setup_console(l, self.options.verbosity_level)
             with self.__run_safely(l):
                 self.initialize()
