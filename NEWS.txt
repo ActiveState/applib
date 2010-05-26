@@ -4,7 +4,7 @@ News
 1.0.0c10
 --------
 
-- 
+- More Python3 related fixes
 
 1.0.0c9
 -------
