@@ -799,14 +799,14 @@ class RawCmdln(cmd.Cmd):
         suffix = _get_trailing_whitespace(marker, help)
 
         # Extract the introspection bits we need.
-        func = handler.im_func
-        if func.func_defaults:
-            func_defaults = list(func.func_defaults)
+        func = handler.__func__
+        if func.__defaults__:
+            func_defaults = list(func.__defaults__)
         else:
             func_defaults = []
-        co_argcount = func.func_code.co_argcount
-        co_varnames = func.func_code.co_varnames
-        co_flags = func.func_code.co_flags
+        co_argcount = func.__code__.co_argcount
+        co_varnames = func.__code__.co_varnames
+        co_flags = func.__code__.co_flags
         CO_FLAGS_ARGS = 4
         CO_FLAGS_KWARGS = 8
 
@@ -831,7 +831,7 @@ class RawCmdln(cmd.Cmd):
                 warnings.warn("argument '**%s' on '%s.%s' command "
                               "handler will never get values" 
                               % (name, self.__class__.__name__,
-                                 func.func_name))
+                                 func.__name__))
             if co_flags & CO_FLAGS_ARGS:
                 name = argnames.pop(-1)
                 tail = "[%s...]" % name.upper()
@@ -1157,14 +1157,14 @@ class Cmdln(RawCmdln):
         and an appropriate error message will be raised/printed if the
         command is called with a different number of args.
         """
-        co_argcount = handler.im_func.func_code.co_argcount
+        co_argcount = handler.__func__.__code__.co_argcount
         if co_argcount == 2:   # handler ::= do_foo(self, argv)
             return handler(argv)
         elif co_argcount >= 3: # handler ::= do_foo(self, subcmd, opts, ...)
             try:
                 optparser = handler.optparser
             except AttributeError:
-                optparser = handler.im_func.optparser = SubCmdOptionParser()
+                optparser = handler.__func__.optparser = SubCmdOptionParser()
             assert isinstance(optparser, SubCmdOptionParser)
 
             # apply subcommand options' defaults from config files, if any.
