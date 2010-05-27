@@ -4,6 +4,8 @@ News
 1.0.0c10
 --------
 
+*Release date: 27-May-2010*
+
 - More Python3 related fixes
 
 1.0.0c9
