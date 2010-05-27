@@ -52,7 +52,10 @@ def sqlalchemy_escape(val, escape_char, special_chars):
     >>> sqlalchemy_escape("text_table", "\\", "%_")
     'text\_table'
     """
-    assert isinstance(val, basestring)
+    if sys.version_info[:2] >= (3, 0):
+        assert isinstance(val, str)
+    else:
+        assert isinstance(val, basestring)
     result = []
     for c in val:
         if c in special_chars + escape_char:
