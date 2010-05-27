@@ -7,10 +7,14 @@ import time
 import subprocess
 from tempfile import TemporaryFile
 from contextlib import nested
+import warnings
 
 from applib.misc import xjoin
 
 __all__ = ['run', 'RunError', 'RunNonZeroReturn', 'RunTimedout']
+
+warnings.filterwarnings('ignore', message='.*With\-statements.*',
+                        category=DeprecationWarning)
 
 
 class RunError(Exception): pass
