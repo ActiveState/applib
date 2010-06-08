@@ -9,10 +9,10 @@ e:
 
 installdeps:
 	e/bin/python setup.py develop
-	e/bin/pip install unittest2
+	e/bin/pip install py
 
 test:
-	e/bin/unit2 discover
+	e/bin/py.test -x -v applib/test/all.py
 
 clean:
 	rm -rf e
