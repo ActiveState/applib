@@ -4,5 +4,6 @@ e
 dist
 build
 *.egg-info
+tmp
 
 *.pyc

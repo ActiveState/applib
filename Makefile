@@ -12,7 +12,7 @@ installdeps:
 	e/bin/pip install py
 
 test:
-	e/bin/py.test -x -v applib/test/all.py
+	e/bin/py.test -x -v applib/test/all.py --junitxml=tmp/testreport.xml
 
 clean:
 	rm -rf e
