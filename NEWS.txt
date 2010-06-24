@@ -6,7 +6,7 @@ News
 
 *Release date: ??-2010*
 
-- x 
+- Fix #1: Broken pipe error when breaking `less` 
 
 1.0.0c10
 --------

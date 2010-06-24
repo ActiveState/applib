@@ -283,7 +283,17 @@ class ConsoleHandler(logging.StreamHandler):
         # See:
         #   http://bugs.python.org/issue6333
         if self.stream and hasattr(self.stream, 'flush') and not self.stream.closed:
-            logging.StreamHandler.flush(self)
+            try:
+                logging.StreamHandler.flush(self)
+            except IOError as e:
+                if e.errno == 32:
+                    # skip 'broken pipe' errors that likely occur due to
+                    # killing the process on the other end of the pipe
+                    # eg: piping command output to `less` and then pressing
+                    # Q in the middle of it.
+                    pass
+                else:
+                    raise
 
 
 def _clear_record_traceback_cache(record):
