@@ -4,7 +4,7 @@ from os import path
 
 
 here = os.path.abspath(path.dirname(__file__))
-README = open(path.join(here, 'README.txt')).read()
+README = open(path.join(here, 'README.rst')).read()
 NEWS = open(path.join(here, 'NEWS.txt')).read()
 
 # make sure that we import applib/ (and not the system-wide one)
