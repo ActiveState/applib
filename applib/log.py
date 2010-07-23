@@ -25,7 +25,7 @@ else:
 
 
 @cmdln.option('-v', '--verbose', action="count", dest='verbosity_level',
-              default=0,
+              default=None,
               help='-v will show tracebacks; -vv also debug messages')
 class LogawareCmdln(cmdln.CmdlnWithConfigParser):
     """A Cmdln class that integrates with this modules's functionality
@@ -37,7 +37,7 @@ class LogawareCmdln(cmdln.CmdlnWithConfigParser):
     derived class) automatically.
     """
 
-    def __init__(self, install_console=False, *args, **kwargs):
+    def __init__(self, install_console=False, default_verbosity=0, *args, **kwargs):
         """
         Arguments:
          - install_console: install console handlers in logger
@@ -45,6 +45,7 @@ class LogawareCmdln(cmdln.CmdlnWithConfigParser):
         cmdln.CmdlnWithConfigParser.__init__(self, *args, **kwargs)
         self.__initialized = False
         self.__install_console = install_console
+        self.__default_verbosity = default_verbosity
 
     def initialize(self):
         """This method is called by ``bootstrapped`` - once and only once."""
@@ -68,8 +69,8 @@ class LogawareCmdln(cmdln.CmdlnWithConfigParser):
             # install console (if required) and call the `initialize` method
             # once.
             if self.__install_console:
-                assert type(self.options.verbosity_level) is int, \
-                        'un-int type for value: %s' % self.options.verbosity_level
+                if self.options.verbosity_level is None:
+                    self.options.verbosity_level = self.__default_verbosity
                 setup_console(l, self.options.verbosity_level)
             with self.__run_safely(l):
                 self.initialize()

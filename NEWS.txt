@@ -6,7 +6,7 @@ News
 
 *Release date: ??-2010*
 
-- 
+- applib.log: support for specifying the default verbosity level
 
 1.0.0
 -----
