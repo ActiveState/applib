@@ -27,6 +27,10 @@ def require_option(options, option_name, details=None):
     >>> require_option('foo-bar')
     ...
     CmdlnUserError: required option, --foo-bar, is mising
+
+    From http://twitter.com/ActiveState/status/19782350475
+	'required options' - conforming to unix standard vs being creative with
+	non-positional arguments. http://bit.ly/d2iiUL #python #optparse ^SR
     """
     option_var_name = option_name.replace('-', '_')
     if not hasattr(options, option_var_name):
