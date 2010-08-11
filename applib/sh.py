@@ -116,7 +116,7 @@ def find(pth, pattern):
 @contextmanager
 def cd(pth):
     """With context to temporarily change directory"""
-    assert path.isdir(pth)
+    assert path.isdir(existing(pth)), pth
     
     cwd = os.getcwd()
     os.chdir(pth)
@@ -137,6 +137,13 @@ def tmpdir(prefix='tmp-', suffix=''):
     with cd(d):
         yield d
     rm(d)
+
+
+def existing(pth):
+    """Return `pth` after checking it exists"""
+    if not path.exists(pth):
+        raise IOError('"{0}" does not exist'.format(pth))
+    return pth
     
     
 def _copytree(src, dst, symlinks=False, ignore=None, copyperms=True):
