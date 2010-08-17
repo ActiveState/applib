@@ -193,9 +193,12 @@ class SimpleObject(object):
         passed_keys = set(mapping.keys())
         class_fields = set(self.FIELDS)
         
-        assert passed_keys == class_fields, \
-            "passed different set of keys ({0}) to {1} ({2})".format(
-            passed_keys, self.__class__, class_fields)
+        if passed_keys != class_fields:
+            raise ValueError('\n'.join([
+                "{0} got different fields from expected".format(
+                    self.__class__),
+                "  got     : {0}".format(list(sorted(passed_keys))),
+                "  expected: {0}".format(list(sorted(class_fields)))]))
 
 
 class _get_best_column_type():
