@@ -1793,7 +1793,8 @@ if __name__ == "__main__" and len(sys.argv) == 6:
 ## -- contrib --
 
 @option("-c", "--configfile", dest="configfile", default=None,
-       help='Configuration file to read options from')
+        metavar='FILENAME',
+        help='Configuration file to read options from')
 class CmdlnWithConfigParser(Cmdln):
     """Cmdln with configparser support
     
