@@ -6,7 +6,7 @@ News
 
 *Release date: ??-2010*
 
-- ??
+- #3: sh.unpack now ensures single top-level directory
 
 1.0.1
 -----

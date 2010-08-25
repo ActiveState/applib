@@ -10,9 +10,47 @@ from applib import sh
 __all__ = ['implementors']
 
 
-class CompressedFile(object):
+class CompressedFile:
+    
     def __init__(self, filename):
         self.filename = filename
+
+    def extractall_with_single_toplevel(self, f, names):
+        """Same as ``extractall`` but ensures a single toplevel directory
+
+        Some compressed archives do not stick to the convension of having a
+        single top-level directory. For eg.,
+        http://code.google.com/p/grapefruit/issues/detail?id=3
+
+        In such cases, a new toplevel directory corresponding to the name of the
+        compressed file (eg: 'grapefruit-0.1a3' if compressed file is named
+        'grapefruit-0.1a3.tar.gz') is created and then extraction happens
+        *inside* that directory.
+
+        - f:     tarfile/zipefile file object
+        - names: List of filenames in the archive
+
+        Return the absolute path to the toplevel directory.
+        """
+        toplevels = _find_top_level_directories(names, sep='/')
+
+        if len(toplevels) == 0:
+            raise sh.PackError('archive is empty')
+        elif len(toplevels) > 1:
+            toplevel = _archive_basename(self.filename)
+            os.mkdir(toplevel)
+            with sh.cd(toplevel):
+                f.extractall()
+            return path.abspath(toplevel)
+        else:
+            f.extractall()
+            toplevel = path.abspath(toplevels[0])
+            assert path.exists(toplevel)
+            if not path.isdir(toplevel):
+                # eg: http://pypi.python.org/pypi/DeferArgs/0.4
+                raise SingleFile('archive has a single file: %s', toplevel)
+            return toplevel
+        
         
 
 class ZippedFile(CompressedFile):
@@ -26,8 +64,8 @@ class ZippedFile(CompressedFile):
         try:
             f = zipfile.ZipFile(self.filename, 'r')
             try:
-                f.extractall()
-                return _possible_dir_name(f.namelist())
+                return self.extractall_with_single_toplevel(
+                    f, f.namelist())
             except OSError as e:
                 if e.errno == 17:
                     # http://bugs.python.org/issue6510
@@ -63,8 +101,8 @@ class TarredFile(CompressedFile):
             f = tarfile.open(self.filename, self._get_mode())
             try:
                 _ensure_read_write_access(f)
-                f.extractall()
-                return _possible_dir_name(f.getnames())
+                return self.extractall_with_single_toplevel(
+                    f, f.getnames())
             finally:
                 f.close()
         except tarfile.TarError as e:
@@ -122,22 +160,6 @@ class SingleFile(sh.PackError):
     contain one directory
     """
     
-
-def _possible_dir_name(contents):
-    """The directory where the the files are possibly extracted."""
-    top_level_dirs = _find_top_level_directories(contents, sep='/')
-    if len(top_level_dirs) == 0:
-        raise sh.PackError('has no contents')
-    elif len(top_level_dirs) > 1:
-        raise MultipleTopLevels('more than one top levels: %s' % top_level_dirs)
-    d = path.abspath(top_level_dirs[0])
-    assert path.exists(d), 'missing dir: %s' % d
-    if not path.isdir(d):
-        # eg: http://pypi.python.org/pypi/DeferArgs/0.4
-        raise SingleFile('contains a single file: %s' % d)
-    return d
-
-
 def _ensure_read_write_access(tarfileobj):
     """Ensure that the given tarfile will be readable and writable by the
     user (the client program using this API) after extraction.
@@ -163,3 +185,19 @@ def _find_top_level_directories(fileslist, sep):
         toplevels.add(firstcomponent)
     return list(toplevels)
     
+
+def _archive_basename(filename):
+    """Return a suitable base directory name for the given archive"""
+    exts = (
+        '.tar.gz',
+        '.tgz',
+        '.tar.bz2',
+        '.bz2',
+        '.zip')
+
+    filename = path.basename(filename)
+    
+    for ext in exts:
+        if filename.endswith(ext):
+            return filename[:-len(ext)]
+    return filename + '.dir'
