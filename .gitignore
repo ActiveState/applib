@@ -2,3 +2,8 @@ dist
 *.pyc
 *.egg-info
 tmp
+
+bin
+lib
+include
+.Python
