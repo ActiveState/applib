@@ -1,15 +1,15 @@
 PYTHON := python
 
-all: e installdeps
+all: createvenv installdeps
 
-e:
-	virtualenv --no-site-packages --distribute --python=${PYTHON} .
-	bin/python -c 'assert "ActiveState" in str(__builtins__.copyright)'
-	# e/bin/python -m activestate
+createvenv:
+	virtualenv5 --no-site-packages --python=${PYTHON} .
+	bin/easy_install -U distribute
+	bin/python -m activestate > /dev/null # are we using activepython?
 
 installdeps:
 	bin/python setup.py develop
-	bin/pip install py
+	bin/easy_install py
 
 test:
 	bin/py.test -x -v applib/test/all.py --junitxml=tmp/testreport.xml

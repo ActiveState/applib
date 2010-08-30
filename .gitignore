@@ -7,3 +7,5 @@ bin
 lib
 include
 .Python
+
+distribute-*.tar.gz
