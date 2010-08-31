@@ -1,12 +1,13 @@
 News
 ====
 
-1.0.2
+1.1.0
 -----
 
 *Release date: ??-2010*
 
 - #3: sh.unpack now ensures single top-level directory
+- #4: Stop using `unicode` (py3k); applib now depends on the `six` package
 
 1.0.1
 -----
