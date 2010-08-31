@@ -3,7 +3,7 @@ PYTHON := python
 all: createvenv installdeps
 
 createvenv:
-	virtualenv5 --no-site-packages --python=${PYTHON} .
+	virtualenv --no-site-packages --python=${PYTHON} .
 	bin/easy_install -U distribute
 	bin/python -m activestate > /dev/null # are we using activepython?
 

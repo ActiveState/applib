@@ -27,6 +27,7 @@ __author__ = "Trent Mick"
 import sys
 import os
 
+from six.strdata import u
 
 class Error(Exception):
     pass
@@ -168,7 +169,7 @@ def _get_win_folder_from_registry(csidl_name):
     registry for this guarantees us the correct answer for all CSIDL_*
     names.
     """
-    import _winreg
+    from six.moves import winreg
     
     shell_folder_name = {
         "CSIDL_APPDATA": "AppData",
@@ -176,9 +177,9 @@ def _get_win_folder_from_registry(csidl_name):
         "CSIDL_LOCAL_APPDATA": "Local AppData",
     }[csidl_name]
 
-    key = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER,
+    key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
         r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
-    dir, type = _winreg.QueryValueEx(key, shell_folder_name)
+    dir, type = winreg.QueryValueEx(key, shell_folder_name)
     return dir
 
 def _get_win_folder_with_pywin32(csidl_name):
@@ -188,7 +189,7 @@ def _get_win_folder_with_pywin32(csidl_name):
     # not return unicode strings when there is unicode data in the
     # path.
     try:
-        dir = unicode(dir)
+        dir = u(dir)
     except UnicodeError:
         pass
     return dir
