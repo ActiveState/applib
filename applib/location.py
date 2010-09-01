@@ -224,6 +224,6 @@ if sys.platform == "win32":
 
 if __name__ == "__main__":
     print("applib: user data dir: %s" % user_data_dir("Komodo", "ActiveState"))
-    print("applib: site data dir:" % site_data_dir("Komodo", "ActiveState"))
-    print("applib: user cache dir:" % user_cache_dir("Komodo", "ActiveState"))
+    print("applib: site data dir: %s" % site_data_dir("Komodo", "ActiveState"))
+    print("applib: user cache dir: %s" % user_cache_dir("Komodo", "ActiveState"))
 

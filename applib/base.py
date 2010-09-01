@@ -87,8 +87,8 @@ class Locations(object):
 if __name__ == '__main__':
     # self-test code
     app = Application('PyPM', 'ActiveState', '0.1')
-    print(app.locations.user_data_dir)
-    print(app.locations.site_data_dir)
-    print(app.locations.user_cache_dir)
-    print(app.locations.log_file_path)
+    print('user_data_dir', app.locations.user_data_dir)
+    print('site_data_dir', app.locations.site_data_dir)
+    print('user_cache_dir', app.locations.user_cache_dir)
+    print('log_file_path', app.locations.log_file_path)
 
