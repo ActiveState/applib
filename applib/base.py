@@ -4,6 +4,8 @@ import sys
 from os.path import abspath, join, expanduser
 import logging
 
+from appdirs import AppDirs
+
 from applib import location, log
 from applib.log import LogawareCmdln as Cmdln
 
@@ -32,7 +34,8 @@ class Application(object):
         self.name = name
         self.company = company
         self.compatibility_version = compatibility_version
-        self.locations = Locations(self)
+        self.locations = AppDirs2(
+            name, company, compatibility_version, roaming=False)
         
     def run(self, cmdln_class):
         """Run the application using the given cmdln processor.
@@ -45,43 +48,14 @@ class Application(object):
         cmdln_class(install_console=True).main()
 
 
-class Locations(object):
-    """A object holding the locations that are generic to an application.
-    
-    The following locations are available:
-    
-    - user_data_dir:   Directory to store the user's settings
-    - site_data_dir:   Directory to store global application settings
-    - user_cache_dir:  Directory to keep temperory/cache files
-    - log_file_path:   Location of the application log file
-    """
-
-    def __init__(self, app):
-        self.app = app
-
-    @property
-    def user_data_dir(self):
-        return location.user_data_dir(
-            self.app.name, self.app.company, self.app.compatibility_version)
-
-    @property
-    def site_data_dir(self):
-        return location.site_data_dir(
-            self.app.name, self.app.company, self.app.compatibility_version)
-
-    @property
-    def user_cache_dir(self):
-        return location.user_cache_dir(
-            self.app.name, self.app.company, self.app.compatibility_version)
-    
+class AppDirs2(AppDirs):
     @property
     def log_file_path(self):
-        if sys.platform.startswith('win'):
-            return join(self.user_cache_dir, self.app.name + '.log')
-        elif sys.platform.startswith('darwin'):
-            return join(expanduser('~/Library/Logs'), self.app.name + '.log')
+        if sys.platform in ('win32', 'darwin'):
+            name = self.appname + '.log'
         else:
-            return join(expanduser('~'), '.'+self.app.name.lower() + '.log')
+            name = self.appname.lower() + '.log'
+        return join(self.log_dir, name)
 
 
 if __name__ == '__main__':
