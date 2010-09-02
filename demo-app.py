@@ -8,7 +8,7 @@ from applib import textui, sh, _cmdln as cmdln
 
 LOG = logging.getLogger(__name__)
 
-application = Application('demo-app', 'CompanyNameHere', '1.0.1')
+application = Application('demo-app', 'CompanyNameHere', '1.2')
 
 
 @cmdln.option('', '--foo', action='store_true', help='*must pass --foo')
