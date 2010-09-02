@@ -55,7 +55,7 @@ class AppDirs2(AppDirs):
             name = self.appname + '.log'
         else:
             name = self.appname.lower() + '.log'
-        return join(self.log_dir, name)
+        return join(self.user_log_dir, name)
 
 
 if __name__ == '__main__':
