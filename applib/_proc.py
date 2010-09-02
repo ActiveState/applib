@@ -6,7 +6,6 @@ import sys
 import time
 import subprocess
 from tempfile import TemporaryFile
-from contextlib import nested
 import warnings
 
 from applib.misc import xjoin
@@ -72,31 +71,32 @@ def run(cmd, merge_streams=False, timeout=None, env=None):
         cmd = '"{0}"'.format(cmd)
 
     # redirect stdout and stderr to temporary *files*
-    with nested(TemporaryFile(), TemporaryFile()) as (outf, errf):
-        p = subprocess.Popen(cmd, env=env, shell=True, stdout=outf,
-                             stderr=outf if merge_streams else errf)
+    with TemporaryFile() as outf:
+        with TemporaryFile() as errf:
+            p = subprocess.Popen(cmd, env=env, shell=True, stdout=outf,
+                                 stderr=outf if merge_streams else errf)
+    
+            if timeout is None:
+                p.wait()
+            else:
+                # poll for terminated status till timeout is reached
+                t_nought = time.time()
+                seconds_passed = 0
+                while True:
+                    if p.poll() is not None:
+                        break
+                    seconds_passed = time.time() - t_nought
+                    if timeout and seconds_passed > timeout:
+                        p.terminate()
+                        raise RunTimedout(
+                            cmd, timeout,
+                            _read_tmpfd(outf), _read_tmpfd(errf))
+                    time.sleep(0.1)
 
-        if timeout is None:
-            p.wait()
-        else:
-            # poll for terminated status till timeout is reached
-            t_nought = time.time()
-            seconds_passed = 0
-            while True:
-                if p.poll() is not None:
-                    break
-                seconds_passed = time.time() - t_nought
-                if timeout and seconds_passed > timeout:
-                    p.terminate()
-                    raise RunTimedout(
-                        cmd, timeout,
-                        _read_tmpfd(outf), _read_tmpfd(errf))
-                time.sleep(0.1)
-
-        # the process has exited by now; nothing will to be written to
-        # outfd/errfd anymore.
-        stdout = _read_tmpfd(outf)
-        stderr = _read_tmpfd(errf)
+            # the process has exited by now; nothing will to be written to
+            # outfd/errfd anymore.
+            stdout = _read_tmpfd(outf)
+            stderr = _read_tmpfd(errf)
 
     if p.returncode != 0:
         raise RunNonZeroReturn(p, cmd, stdout, stderr)

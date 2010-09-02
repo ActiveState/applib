@@ -4,19 +4,19 @@ import logging
 
 from applib.base import Cmdln, Application
 from applib.misc import require_option
-from applib import textui, _cmdln as cmdln
+from applib import textui, sh, _cmdln as cmdln
 
 LOG = logging.getLogger(__name__)
 
 application = Application('demo-app', 'CompanyNameHere', '1.0.1')
 
 
-@cmdln.option('', '--dummy', action='store_true')
+@cmdln.option('', '--foo', action='store_true', help='*must pass --foo')
 class Commands(Cmdln):
     name = "demo-app"
 
     def initialize(self):
-        require_option(self.options, 'dummy')
+        require_option(self.options, 'foo')
 
     @cmdln.alias('cd')
     @cmdln.option('-t', '--show-time', action='store_true',
@@ -35,6 +35,15 @@ class Commands(Cmdln):
                 print(now)
             else:
                 print(now.date())
+                
+    def do_ls(self, subcmd, opts):
+        """${cmd_name}: Show directory listing (runs 'ls')
+        
+        ${cmd_usage}
+        ${cmd_option_list}
+        """
+        with self.bootstrapped():
+            print(sh.run('ls')[0].decode('utf-8'))
                 
     def do_makeerror(self, subcmd, opts, what):
         """${cmd_name}: Make an error. Use -v to see full traceback
