@@ -6,9 +6,9 @@ News
 
 *Release date: ??-2010*
 
-- #1: Deprecate applib.base.Locations and applib.locations in favour 'appdirs'
-- #3: sh.unpack now ensures single top-level directory
-- #4: Stop using `unicode` (py3k); applib now depends on the `six` package
+- bb #1: Deprecate applib.base.Locations and applib.locations in favour 'appdirs'
+- bb #3: sh.unpack now ensures single top-level directory
+- bb #4: Stop using `unicode` (py3k); applib now depends on the `six` package
 
 1.0.1
 -----
@@ -22,7 +22,7 @@ News
 
 *Release date: 29-Jun-2010*
 
-- Fix #1: Broken pipe error when breaking `less` 
+- bb #1: Broken pipe error when breaking `less` 
 
 1.0.0c10
 --------
