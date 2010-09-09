@@ -53,6 +53,7 @@ class Commands(Cmdln):
         """
         with self.bootstrapped():
             LOG.debug('About to make an error! %s', what)
+            textui.askyesno('Press enter to proceed:', default=True)
             1/0
             
     def do_multable(self, subcmd, opts, number=10, times=25):

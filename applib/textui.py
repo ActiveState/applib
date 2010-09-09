@@ -5,10 +5,15 @@ from datetime import datetime, timedelta
 from contextlib import contextmanager
 import logging
 
+import six
+
 LOG = logging.getLogger(__name__)
 
 __all__ = ['colprint', 'find_console_width', 'ProgressBar',
            'clear_progress_bar', 'redraw_progress_bar', 'safe_output']
+
+if not six.PY3:
+    input = raw_input
 
 
 class ProgressBar(object):
@@ -157,7 +162,7 @@ def askyesno(question, default):
         default and 'n' or 'N')
 
     while True:
-        val = raw_input(s).strip().lower()
+        val = input(s).strip().lower()
         
         if val == '':
             return default
