@@ -6,6 +6,7 @@ News
 
 *Release date: ??-2010*
 
+- applib now depends on  appdirs and six
 - #1: Deprecate applib.base.Locations and applib.locations in favour 'appdirs'
 - #3: sh.unpack now ensures single top-level directory
 - #4: Stop using `unicode` (py3k); applib now depends on the `six` package
