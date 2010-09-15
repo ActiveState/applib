@@ -225,6 +225,7 @@ class _get_best_column_type():
         description        = Text,
         
         python3            = Boolean,
+        metadata_hash      = String,
         
         install_requires   = PickleType,
         files_list         = PickleType,
