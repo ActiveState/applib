@@ -4,6 +4,7 @@ import sys
 from datetime import datetime, timedelta
 from contextlib import contextmanager
 import logging
+import math
 
 import six
 
@@ -120,7 +121,8 @@ class ProgressBar(object):
                 percent,
                 self.show_size(self.processed),
                 self.show_size(self.total),
-                delta.seconds/60, delta.seconds%60),
+                math.floor(delta.seconds/60.0),
+                delta.seconds%60),
         ])
         
         self._length = len(progress_bar)

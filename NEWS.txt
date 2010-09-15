@@ -11,6 +11,7 @@ News
 - #3: sh.unpack now ensures single top-level directory
 - #4: Stop using `unicode` (py3k); applib now depends on the `six` package
 - #5: Stop using `raw_input` (py3k)
+- #6: Progress Bar prints delay with proper precision on py3k
 
 1.0.1
 -----
