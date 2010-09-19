@@ -12,6 +12,7 @@ News
 - #4: Stop using `unicode` (py3k); applib now depends on the `six` package
 - #5: Stop using `raw_input` (py3k)
 - #6: Progress Bar prints delay with proper precision on py3k
+- log.py: skip printing error message when traceback will also be printed
 
 1.0.1
 -----
