@@ -69,7 +69,7 @@ _NOT_SPECIFIED = ("Not", "Specified")
 # failed because of incorrect number of arguments (see
 # Python/getargs.c).
 _INCORRECT_NUM_ARGS_RE = re.compile(
-    r"(takes [\w ]+ )(\d+)( arguments? \()(\d+)( given\))")
+    r"(takes [\w ]+ )(\d+)[\w ]*( arguments? \()(\d+)( given\))")
 
 
 
@@ -1187,6 +1187,7 @@ class Cmdln(RawCmdln):
                 #   do_foo() takes at least 4 arguments (3 given)
                 #   do_foo() takes at most 5 arguments (6 given)
                 #   do_foo() takes exactly 5 arguments (6 given)
+                #   do_foo() takes exactly 5 positional arguments (6 given)
                 # Raise CmdlnUserError for these with a suitably
                 # massaged error message.
                 tb = sys.exc_info()[2] # the traceback object
