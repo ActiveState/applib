@@ -325,7 +325,7 @@ class ConsoleFormatter(logging.Formatter):
         # attach 'error:' prefix to error/critical messages
         # attach 'warning:' prefix accordingly
         s = logging.Formatter.format(self, record)
-        if record.levelno >= logging.ERROR and record.exc_info is None:
+        if record.levelno >= logging.ERROR:
             return 'error: {0}'.format(s)
         elif record.levelno == logging.WARNING:
             return 'warning: {0}'.format(s)
