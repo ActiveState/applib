@@ -111,7 +111,7 @@ class ProgressBar(object):
             '[',
 
             # solid bar
-            '.' * bar_filled,
+            '+' * bar_filled,
 
             # empty space
             ' ' * (bar_width-bar_filled),
