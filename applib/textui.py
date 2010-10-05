@@ -108,7 +108,7 @@ class ProgressBar(object):
 
         bar_width = 20
         bar_filled = int(round(20.0/100 * percent))
-        filled = ['+'] * bar_filled
+        filled = ['='] * bar_filled
         if filled:
             filled[-1] = '>'
         filled = ''.join(filled)
