@@ -33,6 +33,7 @@ class ProgressBar(object):
         _set_current_progress_bar(self)
         self.delay = timedelta(seconds=delay)
         self.start = datetime.now()
+        self.estimated_time_left = None
         self.lastprint = None
         self.lastprocessed = 0
         self.total = total
@@ -102,6 +103,7 @@ class ProgressBar(object):
         percent = _calculate_percent(self.processed, self.total)
         now = datetime.now()
         delta = now - self.start
+        self.estimated_time_left = delta.seconds * (100.0-percent)/percent
 
         bar_width = 20
         bar_filled = int(round(20.0/100 * percent))
@@ -122,12 +124,15 @@ class ProgressBar(object):
             ' ' * (bar_width-bar_filled),
 
             # footer
-            '] {0}% {1}/{2} ({3}m{4}s)'.format(
+            '] {0}% {1}/{2} ({3}m{4}s; left={5}m{6}s)'.format(
                 percent,
                 self.show_size(self.processed),
                 self.show_size(self.total),
+                # TODO: don't show 'minutes' if it is zero
                 math.floor(delta.seconds/60.0),
-                delta.seconds%60),
+                delta.seconds%60,
+                math.floor(self.estimated_time_left/60.0),
+                self.estimated_time_left%60)
         ])
         
         self._length = len(progress_bar)
