@@ -124,15 +124,13 @@ class ProgressBar(object):
             ' ' * (bar_width-bar_filled),
 
             # footer
-            '] {0}% {1}/{2} ({3}m{4}s; left={5}m{6}s)'.format(
+            '] {0:-3}% {1}/{2} ({3}; ETA:{4})'.format(
                 percent,
                 self.show_size(self.processed),
                 self.show_size(self.total),
-                # TODO: don't show 'minutes' if it is zero
-                math.floor(delta.seconds/60.0),
-                delta.seconds%60,
-                math.floor(self.estimated_time_left/60.0),
-                self.estimated_time_left%60)
+                _format_duration(delta.seconds),
+                _format_duration(self.estimated_time_left),
+            )
         ])
         
         self._length = len(progress_bar)
@@ -314,6 +312,14 @@ def _calculate_percent(numerator, denominator):
             raise ValueError('denominator cannot be zero')
 
     return int(round( numerator / float(denominator) * 100 ))
+    
+
+def _format_duration(seconds):
+    s = []
+    if seconds > 60:
+        s.append('{0}m'.format(int(seconds/60)))
+    s.append('{0}s'.format(int(seconds % 60)))
+    return ''.join(s)
 
 
 # Handle to the current progress bar object.  There cannot be more than one
