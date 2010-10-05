@@ -56,6 +56,17 @@ class Commands(Cmdln):
             textui.askyesno('Press enter to proceed:', default=True)
             1/0
             
+    def do_think(self, subcmd, opts, length=20):
+        """${cmd_name}: Progress bar example
+        
+        ${cmd_usage}
+        ${cmd_option_list}
+        """
+        with self.bootstrapped():
+            import time
+            for x in textui.ProgressBar.iterate(xrange(int(length))):
+                time.sleep(1)
+            
     def do_multable(self, subcmd, opts, number=10, times=25):
         """${cmd_name}: Print multiplication table
         

@@ -105,13 +105,18 @@ class ProgressBar(object):
 
         bar_width = 20
         bar_filled = int(round(20.0/100 * percent))
+        filled = ['+'] * bar_filled
+        if filled:
+            filled[-1] = '>'
+        filled = ''.join(filled)
+            
         progress_bar = ''.join([
             (self.note+': ') if self.note else '',
             # header:
             '[',
 
             # solid bar
-            '+' * bar_filled,
+            filled,
 
             # empty space
             ' ' * (bar_width-bar_filled),
