@@ -5,6 +5,15 @@ import tempfile
 from applib import sh, textui
 
 
+def test_import():
+    import applib
+    import applib.base
+    import applib.sh
+    import applib.textui
+    import applib.log
+    import applib.misc
+
+
 def test_console_width_detection():
     width = textui.find_console_width()
     assert width > 0
