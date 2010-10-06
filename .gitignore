@@ -4,7 +4,9 @@ dist
 tmp
 
 bin
+Scripts
 lib
+Lib
 include
 .Python
 .tox
