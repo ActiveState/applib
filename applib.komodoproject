@@ -7,7 +7,7 @@
   <string id="import_include_matches"></string>
   <boolean id="import_live">1</boolean>
   <string id="lastTestPlanName_pref">New test plan #1</string>
-  <string id="pythonExtraPaths"></string>
+  <string relative="path" id="pythonExtraPaths">fablib</string>
 <preference-set id="testPlans">
 <preference-set id="New test plan #1">
   <string id="command_line"></string>
