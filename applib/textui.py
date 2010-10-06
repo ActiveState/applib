@@ -111,7 +111,11 @@ class ProgressBar(object):
         if self.processed:
             self.estimated_time_left = delta.seconds * (self.total-self.processed)/self.processed
             
-        if self.lastprint_duration is None or now - self.lastprint_duration > self.delay_duration:
+        # Update time elapsed/left once a second only (delay_duration = 1s).
+        if delta.seconds and (
+            self.lastprint_duration is None or \
+            now - self.lastprint_duration > self.delay_duration):
+            
             self.lastprint_duration = now
             elapsed = _format_duration(delta.seconds)
             if self.estimated_time_left:
