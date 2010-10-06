@@ -103,8 +103,8 @@ class ProgressBar(object):
         percent = _calculate_percent(self.processed, self.total)
         now = datetime.now()
         delta = now - self.start
-        if percent:
-            self.estimated_time_left = delta.seconds * (100.0-percent)/percent
+        if self.processed:
+            self.estimated_time_left = delta.seconds * (self.total-self.processed)/self.processed
 
         bar_width = 20
         bar_filled = int(round(20.0/100 * percent))
