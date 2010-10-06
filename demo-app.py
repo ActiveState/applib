@@ -64,7 +64,9 @@ class Commands(Cmdln):
         """
         with self.bootstrapped():
             import time
-            for x in textui.ProgressBar.iterate(xrange(int(length))):
+            for x in textui.ProgressBar.iterate(range(int(length))):
+                if x == length-1:
+                    break # test that break doesn't mess up output
                 time.sleep(1)
             
     def do_multable(self, subcmd, opts, number=10, times=25):

@@ -50,10 +50,12 @@ class ProgressBar(object):
         generator/iterator.
         """
         p = cls(len(sequence), note=note)
-        for item in sequence:
-            yield item
-            p.tick()
-        p.close()
+        try:
+            for item in sequence:
+                yield item
+                p.tick()
+        finally:
+            p.close()
 
     def tick(self, items=1):
         """The method that updates the display if necessary.
