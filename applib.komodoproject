@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Komodo Project File - DO NOT EDIT -->
+<project id="b6924869-ff45-184c-b942-f9b1c54c455c" kpf_version="5" name="applib.komodoproject">
+<preference-set idref="b6924869-ff45-184c-b942-f9b1c54c455c">
+  <string relative="path" id="import_dirname"></string>
+  <string id="import_exclude_matches">*.*~;*.bak;*.tmp;CVS;.#*;*.pyo;*.pyc;.svn;.git;.hg;.bzr;*%*;tmp*.html;.DS_Store;*.swp;*.kpf;*.komodoproject;.komodotools;.tox;*.egg-info;lib;bin;tmp;include;.gitignore;.Python;__pycache__</string>
+  <string id="import_include_matches"></string>
+  <boolean id="import_live">1</boolean>
+  <string id="lastTestPlanName_pref">New test plan #1</string>
+  <string id="pythonExtraPaths"></string>
+<preference-set id="testPlans">
+<preference-set id="New test plan #1">
+  <string id="command_line"></string>
+  <string relative="url" id="directory"></string>
+  <string id="language">Perl - TAP (*.t)</string>
+</preference-set>
+</preference-set>
+</preference-set>
+</project>
