@@ -1,8 +1,8 @@
 dist
 *.pyc
 *.egg-info
-tmp
 build
+tmp/*
 
 bin
 Scripts
