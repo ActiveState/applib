@@ -32,14 +32,17 @@ class ProgressBar(object):
         
         _set_current_progress_bar(self)
         self.delay = timedelta(seconds=delay)
+        self.delay_duration = timedelta(seconds=1)
         self.start = datetime.now()
         self.estimated_time_left = None
         self.lastprint = None
+        self.lastprint_duration = None  # for updating duration/ETA
         self.lastprocessed = 0
         self.total = total
         self.processed = 0
         self.show_size = show_size
         self.note = note
+        self.duration_display = ''
         self._length = 0 # current length of the progress display
 
     @classmethod
@@ -107,6 +110,15 @@ class ProgressBar(object):
         delta = now - self.start
         if self.processed:
             self.estimated_time_left = delta.seconds * (self.total-self.processed)/self.processed
+            
+        if self.lastprint_duration is None or now - self.lastprint_duration > self.delay_duration:
+            self.lastprint_duration = now
+            elapsed = _format_duration(delta.seconds)
+            if self.estimated_time_left:
+                self.duration_display = '({0}; {1} left)'.format(
+                    elapsed, _format_duration(self.estimated_time_left))
+            else:
+                self.duration_display = '({0})'.format(elapsed)
 
         bar_width = 20
         bar_filled = int(round(20.0/100 * percent))
@@ -127,12 +139,11 @@ class ProgressBar(object):
             ' ' * (bar_width-bar_filled),
 
             # footer
-            '] {0:-3}% {1}/{2} ({3}; ETA:{4})'.format(
+            '] {0:-3}% {1}/{2} {3}'.format(
                 percent,
                 self.show_size(self.processed),
                 self.show_size(self.total),
-                _format_duration(delta.seconds),
-                _format_duration(self.estimated_time_left) if self.estimated_time_left else '-'
+                self.duration_display
             )
         ])
         
