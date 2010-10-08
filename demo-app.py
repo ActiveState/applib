@@ -68,7 +68,7 @@ class Commands(Cmdln):
             import time
             length = int(length)
             for x in textui.ProgressBar.iterate(range(length),
-                                                post='Thought {total} thoughts'):
+                                                post='Thought {total} thoughts in time {elapsed}'):
                 if x == length-1 and not opts.no_break:
                     break # test that break doesn't mess up output
                 time.sleep(0.1)

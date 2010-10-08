@@ -34,6 +34,7 @@ class ProgressBar(object):
         self.delay = timedelta(seconds=delay)
         self.delay_duration = timedelta(seconds=1)
         self.start = datetime.now()
+        self.elapsed = None  # time elapsed from start
         self.estimated_time_left = None
         self.lastprint = None
         self.lastprint_duration = None  # for updating duration/ETA
@@ -114,17 +115,17 @@ class ProgressBar(object):
         self.clear()
         percent = _calculate_percent(self.processed, self.total)
         now = datetime.now()
-        delta = now - self.start
+        self.elapsed = now - self.start
         if self.processed:
-            self.estimated_time_left = delta.seconds * (self.total-self.processed)/self.processed
+            self.estimated_time_left = self.elapsed.seconds * (self.total-self.processed)/self.processed
             
         # Update time elapsed/left once a second only (delay_duration = 1s).
-        if delta.seconds and (
+        if self.elapsed.seconds and (
             self.lastprint_duration is None or \
             now - self.lastprint_duration > self.delay_duration):
             
             self.lastprint_duration = now
-            elapsed = _format_duration(delta.seconds)
+            elapsed = _format_duration(self.elapsed.seconds)
             if self.estimated_time_left:
                 self.duration_display = '({0}; {1} left)'.format(
                     elapsed, _format_duration(self.estimated_time_left))
