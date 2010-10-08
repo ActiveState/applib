@@ -56,6 +56,8 @@ class Commands(Cmdln):
             textui.askyesno('Press enter to proceed:', default=True)
             1/0
             
+    @cmdln.option('', '--no-break', action='store_true',
+                  help='Don\'t break from loop')
     def do_think(self, subcmd, opts, length=200):
         """${cmd_name}: Progress bar example
         
@@ -65,8 +67,9 @@ class Commands(Cmdln):
         with self.bootstrapped():
             import time
             length = int(length)
-            for x in textui.ProgressBar.iterate(range(length)):
-                if x == length-1:
+            for x in textui.ProgressBar.iterate(range(length),
+                                                post='Thought {total} thoughts'):
+                if x == length-1 and not opts.no_break:
                     break # test that break doesn't mess up output
                 time.sleep(0.1)
             

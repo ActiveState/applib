@@ -15,6 +15,7 @@ News
 - textui: Progress Bar shows ETA
 - #8: progressbar prints floats as delay on py3k
 - textui: ProgressBar.iterate clean-ups output if there is an exception/break
+- textui: ProgressBar.iterate(post='...') to print post message after progress
 
 1.0.1
 -----

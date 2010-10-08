@@ -46,19 +46,26 @@ class ProgressBar(object):
         self._length = 0 # current length of the progress display
 
     @classmethod
-    def iterate(cls, sequence, note=None):
-        """Iterate a sequence and update the progress accordingly
+    def iterate(cls, sequence, note=None, post=None):
+        """Iterate a sequence and update the progress bar accordingly
 
-        The sequence must have a 'len' attribute and thus not expected to be a
-        generator/iterator.
+        The sequence must have a 'len' attribute if it is an arbitrary
+        generator.
+        
+        note           -- Text to print before the progress bar
+        post           -- Text to print at the end of progress (w/ fmt vars)
         """
         p = cls(len(sequence), note=note)
+        clean_exit = False
         try:
             for item in sequence:
                 yield item
                 p.tick()
+            clean_exit = True
         finally:
             p.close()
+        if post and clean_exit:
+            sys.stdout.write(post.format(**p.__dict__) + '\n')
 
     def tick(self, items=1):
         """The method that updates the display if necessary.
