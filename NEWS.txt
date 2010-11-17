@@ -16,6 +16,7 @@ News
 - #8: progressbar prints floats as delay on py3k
 - textui: ProgressBar.iterate clean-ups output if there is an exception/break
 - textui: ProgressBar.iterate(post='...') to print post message after progress
+- compression: Workaround zipfile bug with long paths on Windows (issue10447)
 
 1.0.1
 -----

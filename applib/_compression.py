@@ -75,6 +75,11 @@ class ZippedFile(CompressedFile):
                     if isinstance(e, WindowsError) and e.winerror == 267:
                         raise sh.PackError('uses Windows special name (%s)' % e)
                 raise
+            except IOError as e:
+                # http://bugs.python.org/issue10447
+                if sys.platform == 'win32' and e.errno == 2:
+                    raise sh.PackError('reached max path-length: %s' % e)
+                raise
             finally:
                 f.close()
         except (zipfile.BadZipfile, zipfile.LargeZipFile) as e:
