@@ -60,20 +60,26 @@ def run(cmd, merge_streams=False, timeout=None, env=None):
 
      - timeout (in seconds)
      - support for merged streams (stdout+stderr together)
+     
+    `cmd` can be a full command string, or list of prog/args.
 
     Note that returned data is of *undecoded* str/bytes type (not unicode)
 
     Return (stdout, stderr)
     """
-    # Fix for cmd.exe quote issue. See comment #3 and #4 in
-    # http://firefly.activestate.com/sridharr/pypm/ticket/126#comment:3
-    if sys.platform.startswith('win') and cmd.startswith('"'):
-        cmd = '"{0}"'.format(cmd)
+    if isinstance(cmd, (list, tuple)):
+        shell = False
+    else:
+        shell = True
+        # Fix for cmd.exe quote issue. See comment #3 and #4 in
+        # http://firefly.activestate.com/sridharr/pypm/ticket/126#comment:3
+        if sys.platform.startswith('win') and cmd.startswith('"'):
+            cmd = '"{0}"'.format(cmd)
 
     # redirect stdout and stderr to temporary *files*
     with TemporaryFile() as outf:
         with TemporaryFile() as errf:
-            p = subprocess.Popen(cmd, env=env, shell=True, stdout=outf,
+            p = subprocess.Popen(cmd, env=env, shell=shell, stdout=outf,
                                  stderr=outf if merge_streams else errf)
     
             if timeout is None:
