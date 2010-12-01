@@ -28,6 +28,15 @@ from sqlalchemy.types import String, Text, Boolean, PickleType
 from sqlalchemy.orm import sessionmaker, scoped_session, mapper
 
 
+# A PickleType that will work on both Python 2.x and 3.x
+# i.e., if you *write* to a DB entry using Python 3.x, we are letting
+# Python 3.x apps to read from it as well.
+# WARNING: Ideally, if you are starting a new project, please
+# use something else like JSON. See
+# http://twitter.com/zzzeek/status/9765871731867648
+Pickle2Type = PickleType(protocol=2)
+
+
 def setup(db_class, simple_object_cls, primary_keys):
     """A simple API to configure the metadata"""
     table_name = simple_object_cls.__name__
@@ -227,8 +236,8 @@ class _get_best_column_type():
         python3            = Boolean,
         metadata_hash      = String,
         
-        install_requires   = PickleType,
-        files_list         = PickleType,
+        install_requires   = Pickle2Type,
+        files_list         = Pickle2Type,
     )
     
     def __call__(self, name):

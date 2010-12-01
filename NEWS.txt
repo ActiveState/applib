@@ -18,6 +18,8 @@ News
 - textui: ProgressBar.iterate(post='...') to print post message after progress
 - compression: Workaround zipfile bug with long paths on Windows (issue10447)
 - proc: make ``sh.run`` accept ``cmd`` as a list of arguments
+- _simpledb: force PickeType to use protocol 2. `PyPM Bug #88882
+  <http://bugs.activestate.com/show_bug.cgi?id=88882>`_
 
 1.0.1
 -----
