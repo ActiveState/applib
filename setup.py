@@ -29,7 +29,7 @@ setup(name='applib',
       ],
       keywords='',
       author='Sridhar Ratnakumar',
-      author_email='sridhar.ratna@gmail.com',
+      author_email='github@srid.name',
       url='http://github.com/ActiveState/applib',
       license='MIT',
       packages=find_packages(exclude=[
