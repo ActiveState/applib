@@ -219,7 +219,8 @@ def colprint(table, totwidth=None):
     if not table: return
     if totwidth is None:
         totwidth = find_console_width()
-        totwidth -= 1 # for not printing an extra empty line on windows
+        if totwidth is not None:
+            totwidth -= 1 # for not printing an extra empty line on windows
     numcols = max(len(row) for row in table)
     # ensure all rows have >= numcols columns, maybe empty
     padded = [row+numcols*['',] for row in table]
@@ -227,13 +228,14 @@ def colprint(table, totwidth=None):
     widths = [ 1 + max(len(x) for x in column) for column in zip(*padded)]
     widths[-1] -= 1
     # drop or truncate columns from the right in order to fit
-    while sum(widths) > totwidth:
-        mustlose = sum(widths) - totwidth
-        if widths[-1] <= mustlose:
-            del widths[-1]
-        else:
-            widths[-1] -= mustlose
-            break
+    if totwidth is not None:
+        while sum(widths) > totwidth:
+            mustlose = sum(widths) - totwidth
+            if widths[-1] <= mustlose:
+                del widths[-1]
+            else:
+                widths[-1] -= mustlose
+                break
     # and finally, the output phase!
     for row in padded:
         s = ''.join(['%*s' % (-w, i[:w])
@@ -242,6 +244,10 @@ def colprint(table, totwidth=None):
 
 
 def find_console_width():
+    """Return the console width
+
+    Return ``None`` if stdout is not a terminal (eg: a pipe)
+    """
     if sys.platform.startswith('win'):
         return _find_windows_console_width()
     else:
@@ -284,7 +290,7 @@ def _find_unix_console_width():
 
     # fcntl.ioctl will fail if stdout is not a tty
     if not sys.stdout.isatty():
-        return 80
+        return None
 
     s = struct.pack("HHHH", 0, 0, 0, 0)
     fd_stdout = sys.stdout.fileno()

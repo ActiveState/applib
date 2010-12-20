@@ -20,6 +20,7 @@ News
 - proc: make ``sh.run`` accept ``cmd`` as a list of arguments
 - _simpledb: force PickeType to use protocol 2. `PyPM Bug #88882
   <http://bugs.activestate.com/show_bug.cgi?id=88882>`_
+- textui: Make `colprint` not prune columns when stdout is not a terminal
 
 1.0.1
 -----
