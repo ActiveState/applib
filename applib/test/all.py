@@ -1,3 +1,5 @@
+# Copyright (c) 2010 ActiveState Software Inc. All rights reserved.
+
 import os
 from os import path
 import tempfile

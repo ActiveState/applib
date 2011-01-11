@@ -1,3 +1,5 @@
+# Copyright (c) 2010 ActiveState Software Inc. All rights reserved.
+
 """Logging utilities and console integration
 
 Don't use print, use ``LOG.info``. This ensures seemless integration with

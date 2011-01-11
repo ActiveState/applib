@@ -1,3 +1,5 @@
+# Copyright (c) 2010 ActiveState Software Inc. All rights reserved.
+
 from setuptools import setup, find_packages
 import sys, os
 from os import path

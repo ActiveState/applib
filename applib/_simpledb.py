@@ -1,3 +1,5 @@
+# Copyright (c) 2010 ActiveState Software Inc. All rights reserved.
+
 """Simple wrapper around SQLalchemy
 
 This module hides the complexity of SQLAlchemy to provide a simple interface to

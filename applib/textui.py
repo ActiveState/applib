@@ -1,3 +1,5 @@
+# Copyright (c) 2010 ActiveState Software Inc. All rights reserved.
+
 """Textual UI: progress bar and colprint"""
 
 import sys
