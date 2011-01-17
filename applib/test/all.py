@@ -7,6 +7,9 @@ import tempfile
 from applib import sh, textui
 
 
+fixtures = path.join(path.dirname(__file__), 'fixtures')
+
+
 def test_import():
     import applib
     import applib.base
@@ -47,7 +50,13 @@ def test_compression_ensure_read_access():
                 os.listdir(p)
         sh.rm(testdir)
 
-    dr = path.join(path.dirname(__file__), 'fixtures')
-    yield 'u-x on dirs', test_pkg, path.join(dr, 'generator_tools-0.3.5.tar.gz')
-    yield 'u-w on ._setup.py', test_pkg, path.join(dr, 'TracProjectMenu-1.0.tar.gz')
+    yield 'u-x on dirs', test_pkg, path.join(fixtures, 'generator_tools-0.3.5.tar.gz')
+    yield 'u-w on ._setup.py', test_pkg, path.join(fixtures, 'TracProjectMenu-1.0.tar.gz')
+    
+
+def test_compressure_catch_invalid_mode():
+    """Error <IOError: [Errno 22] invalid mode ('wb') or filename> from
+    tarfile.py should be handled"""
+    testdir = tempfile.mkdtemp('-test', 'pypm-')
+    extracted_dir, _ = sh.unpack_archive(path.join(fixtures, 'libtele-0.2.tar.gz'), testdir)
     
