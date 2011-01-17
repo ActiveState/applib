@@ -18,7 +18,7 @@ def test_import():
 
 def test_console_width_detection():
     width = textui.find_console_width()
-    assert width > 0
+    assert width is None
     
 
 def test_colprint():

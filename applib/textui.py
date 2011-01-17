@@ -284,10 +284,6 @@ def longrun(log, finalfn=lambda: None):
         
         
 def _find_unix_console_width():
-    """Return the width of the Unix terminal
-
-    If `stdout` is not a real terminal, return the default value (80)
-    """
     import termios, fcntl, struct, sys
 
     # fcntl.ioctl will fail if stdout is not a tty
@@ -302,10 +298,6 @@ def _find_unix_console_width():
 
 
 def _find_windows_console_width():
-    """Return the width of the Windows console
-
-    If the width cannot be determined, return the default value (80)
-    """
     # http://code.activestate.com/recipes/440694/
     from ctypes import windll, create_string_buffer
     STDIN, STDOUT, STDERR = -10, -11, -12
@@ -321,10 +313,7 @@ def _find_windows_console_width():
          maxx, maxy) = struct.unpack("hhhhHhhhhhh", csbi.raw)
         sizex = right - left + 1
         sizey = bottom - top + 1
-    else:
-        sizex, sizey = 80, 25
-
-    return sizex
+        return sizex
 
 
 
