@@ -4,7 +4,10 @@ import os
 from os import path
 import tempfile
 
-from applib import sh, textui
+import pytest
+
+from applib import sh
+from applib import textui
 
 
 fixtures = path.join(path.dirname(__file__), 'fixtures')
@@ -58,5 +61,7 @@ def test_compressure_catch_invalid_mode():
     """Error <IOError: [Errno 22] invalid mode ('wb') or filename> from
     tarfile.py should be handled"""
     testdir = tempfile.mkdtemp('-test', 'pypm-')
-    extracted_dir, _ = sh.unpack_archive(path.join(fixtures, 'libtele-0.2.tar.gz'), testdir)
+    with pytest.raises(sh.PackError):
+        extracted_dir, _ = sh.unpack_archive(
+            path.join(fixtures, 'libtele-0.2.tar.gz'), testdir)
     

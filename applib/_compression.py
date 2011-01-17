@@ -118,6 +118,9 @@ class TarredFile(CompressedFile):
             # see http://bugs.python.org/issue6584
             if 'CRC check failed' in str(e):
                 raise sh.PackError(e)
+            # See github issue #10
+            elif e.errno == 22 and "invalid mode ('wb')" in str(e):
+                raise sh.PackError(e)
             else:
                 raise
             
