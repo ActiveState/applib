@@ -3,6 +3,7 @@
 import os
 from os import path
 import tempfile
+import sys
 
 import pytest
 
@@ -60,8 +61,13 @@ def test_compression_ensure_read_access():
 def test_compressure_catch_invalid_mode():
     """Error <IOError: [Errno 22] invalid mode ('wb') or filename> from
     tarfile.py should be handled"""
-    testdir = tempfile.mkdtemp('-test', 'pypm-')
-    with pytest.raises(sh.PackError):
+    def extract():
+        testdir = tempfile.mkdtemp('-test', 'pypm-')
         extracted_dir, _ = sh.unpack_archive(
             path.join(fixtures, 'libtele-0.2.tar.gz'), testdir)
+    if sys.platform == 'win32':
+        with pytest.raises(sh.PackError):
+            extract()
+    else:
+        extract()
     
