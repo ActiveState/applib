@@ -17,7 +17,7 @@ init = venv.init
 
 def test():
     """Run tests"""
-    venv.install('py')
+    venv.install('pytest')
     py_test = venv.get_script('py.test')
     test_script = path.join('applib', 'test', 'all.py')
     if not path.exists('tmp'):
