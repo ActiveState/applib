@@ -29,4 +29,6 @@ def test():
 
 def tox():
     """Run tox"""
+    if not path.exists('tmp'):
+        os.mkdir('tmp')
     venv.tox()
