@@ -65,7 +65,7 @@ def test_compressure_catch_invalid_mode():
         testdir = tempfile.mkdtemp('-test', 'pypm-')
         extracted_dir, _ = sh.unpack_archive(
             path.join(fixtures, 'libtele-0.2.tar.gz'), testdir)
-    if sys.platform == 'win32':
+    if sys.platform == 'win32' and sys.version_info[:2] < (2, 7):
         with pytest.raises(sh.PackError):
             extract()
     else:
