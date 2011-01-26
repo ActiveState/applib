@@ -25,3 +25,8 @@ def test():
     local(
         '{0} -x -v {1} --junitxml=tmp/testreport.xml'.format(py_test, test_script),
         capture=False)
+
+
+def tox():
+    """Run tox"""
+    venv.tox()
