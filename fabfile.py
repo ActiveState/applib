@@ -2,12 +2,12 @@
 
 import sys
 import os
-from os import path
+import os.path as P
 from fabric.api import *
 
 # Import github.com/srid/fablib
-sys.path.append(path.abspath(
-    path.join(path.dirname(__file__), 'fablib')))
+sys.path.append(P.abspath(
+    P.join(P.dirname(__file__), 'fablib')))
 import venv
 
 
@@ -19,8 +19,8 @@ def test():
     """Run tests"""
     venv.install('pytest')
     py_test = venv.get_script('py.test')
-    test_script = path.join('applib', 'test', 'all.py')
-    if not path.exists('tmp'):
+    test_script = P.join('applib', 'test', 'all.py')
+    if not P.exists('tmp'):
         os.mkdir('tmp')
     local(
         '{0} -x -v {1} --junitxml=tmp/testreport.xml'.format(py_test, test_script),
@@ -29,6 +29,6 @@ def test():
 
 def tox():
     """Run tox"""
-    if not path.exists('tmp'):
+    if not P.exists('tmp'):
         os.mkdir('tmp')
     venv.tox()

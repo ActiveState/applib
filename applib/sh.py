@@ -73,7 +73,7 @@ def mkdirs(pth):
     
 def rm(p):
     """Remove the specified path recursively. Similar to `rm -rf`"""
-    if path.exists(p):
+    if path.lexists(p):
         if path.isdir(p):
             shutil.rmtree(p)
         else:
