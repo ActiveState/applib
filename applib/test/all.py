@@ -13,7 +13,6 @@ from applib import textui
 
 fixtures = path.join(path.dirname(__file__), 'fixtures')
 
-
 def test_import():
     import applib
     import applib.base
@@ -23,6 +22,44 @@ def test_import():
     import applib.misc
 
 
+def test_sh_rm_file():
+    with sh.tmpdir():
+        with open('afile', 'w') as f: f.close()
+        assert path.exists('afile')
+        sh.rm('afile')
+        assert not path.exists('afile')
+
+
+def test_sh_rm_dir():
+    with sh.tmpdir():
+        sh.mkdirs('adir')
+        with sh.cd('adir'):
+            with open('afile', 'w') as f: f.close()
+            assert path.exists('afile')
+        assert path.exists('adir')
+        sh.rm('adir')
+        assert not path.exists('adir')
+        
+        
+def test_sh_rm_symlink():
+    with sh.tmpdir():
+        with open('afile', 'w') as f: f.close()
+        assert path.exists('afile')
+        os.symlink('afile', 'alink')
+        assert path.lexists('alink')
+        sh.rm('alink')
+        assert not path.lexists('alink')
+        
+        
+def test_sh_rm_broken_symlink():
+    with sh.tmpdir():
+        os.symlink('afile-notexist', 'alink')
+        assert not path.exists('alink')
+        assert path.lexists('alink')
+        sh.rm('alink')
+        assert not path.lexists('alink')
+        
+        
 def test_console_width_detection():
     width = textui.find_console_width()
     assert width is None
