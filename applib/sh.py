@@ -72,9 +72,12 @@ def mkdirs(pth):
     
     
 def rm(p):
-    """Remove the specified path recursively. Similar to `rm -rf`"""
+    """Remove the specified path recursively. Similar to `rm -rf ARG`
+    
+    Note: if ARG is a symlink, only that symlink will be removed.
+    """
     if path.lexists(p):
-        if path.isdir(p):
+        if path.isdir(p) and not path.islink(p):
             shutil.rmtree(p)
         else:
             os.remove(p)

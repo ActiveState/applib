@@ -59,6 +59,19 @@ def test_sh_rm_broken_symlink():
         sh.rm('alink')
         assert not path.lexists('alink')
         
+def test_sh_rm_symlink_dir():
+    with sh.tmpdir():
+        sh.mkdirs('adir')
+        with sh.cd('adir'):
+            with open('afile', 'w') as f: f.close()
+            assert path.exists('afile')
+        assert path.exists('adir')
+        os.symlink('adir', 'alink')
+        assert path.lexists('alink')
+        sh.rm('alink')
+        assert path.exists('adir')
+        assert not path.lexists('alink')
+        
         
 def test_console_width_detection():
     width = textui.find_console_width()
