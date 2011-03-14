@@ -108,7 +108,7 @@ def test_compression_ensure_read_access():
     yield 'u-w on ._setup.py', test_pkg, path.join(fixtures, 'TracProjectMenu-1.0.tar.gz')
     
 
-def test_compressure_catch_invalid_mode():
+def test_compression_catch_invalid_mode():
     """Error <IOError: [Errno 22] invalid mode ('wb') or filename> from
     tarfile.py should be handled"""
     def extract():
@@ -120,4 +120,17 @@ def test_compressure_catch_invalid_mode():
             extract()
     else:
         extract()
+    
+    
+@pytest.skip(msg='Known issue')
+def test_compression_issue_11():
+    """https://github.com/ActiveState/applib/issues/#issue/11
+    
+    * Windows: IOError: [Errno 13] Permission denied: '.\\airi-0.0.1\\AIRi'
+    * OSX: IOError: [Errno 21] Is a directory: './airi-0.0.1/AIRi
+    * OSX Archive Utility (Finder): Unable to unarchive "airi-0.0.1.tar" ...
+         (Error 1 - Operation not permitted.)
+    """
+    testdir = tempfile.mkdtemp('applib')
+    d, _ = sh.unpack_archive(path.join(fixtures, 'airi-0.0.1.tar.gz'), testdir)
     
