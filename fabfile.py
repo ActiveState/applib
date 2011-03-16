@@ -9,6 +9,7 @@ from fabric.api import *
 sys.path.append(P.abspath(
     P.join(P.dirname(__file__), 'fablib')))
 import venv
+local = venv.local
 
 
 clean = venv.clean

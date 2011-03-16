@@ -41,6 +41,7 @@ def test_sh_rm_dir():
         assert not path.exists('adir')
         
         
+@pytest.mark.skipif('sys.platform == "win32"')
 def test_sh_rm_symlink():
     with sh.tmpdir():
         with open('afile', 'w') as f: f.close()
@@ -51,6 +52,7 @@ def test_sh_rm_symlink():
         assert not path.lexists('alink')
         
         
+@pytest.mark.skipif('sys.platform == "win32"')
 def test_sh_rm_broken_symlink():
     with sh.tmpdir():
         os.symlink('afile-notexist', 'alink')
@@ -59,6 +61,8 @@ def test_sh_rm_broken_symlink():
         sh.rm('alink')
         assert not path.lexists('alink')
         
+
+@pytest.mark.skipif('sys.platform == "win32"')
 def test_sh_rm_symlink_dir():
     with sh.tmpdir():
         sh.mkdirs('adir')
@@ -122,7 +126,7 @@ def test_compression_catch_invalid_mode():
         extract()
     
     
-@pytest.skip(msg='Known issue')
+@pytest.mark.xfail
 def test_compression_issue_11():
     """https://github.com/ActiveState/applib/issues/#issue/11
     
