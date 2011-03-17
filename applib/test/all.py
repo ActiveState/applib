@@ -37,11 +37,15 @@ def test_sh_runerror_unicode():
 
 def test_sh_runerror_limit():
     with pytest.raises(sh.RunError):
+        from random import choice
+        import string
+        LINE = ''.join([choice(string.ascii_letters) for x in range(80)])
         try:
-            sh.run(r'''python -c "print('\n'.join(['ABCDEFGHIJK']*100)); raise SystemExit('an error');"''')
+            sh.run(r'''python -c "print('\n'.join(['%s']*100)); raise SystemExit('an error');"''' % LINE)
         except sh.RunError as e:
-            c = str(e).count('ABCDEFGHIJK')
-            assert c < 10
+            c = str(e).count(LINE)
+            # def _limit_str(s, maxchars=80*15): --- so ~ 15 lines (not 100 lines)
+            assert c < 20, "original message: %s" % e  
             assert '[...]' in str(e)
             raise
 

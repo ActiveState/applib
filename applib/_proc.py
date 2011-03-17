@@ -126,7 +126,7 @@ def _read_tmpfd(fil):
 
 def _limit_str(s, maxchars=80*15):
     if len(s) > maxchars:
-        return '[...]\n' + s[:100]
+        return '[...]\n' + s[:maxchars]
     return s
     
 
