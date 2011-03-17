@@ -8,6 +8,7 @@ News
 - sh.rm: remove symlinks as well (`PyPM Bug #89540
   <http://bugs.activestate.com/show_bug.cgi?id=89540>`_)
 - #12: sh.RunError now handles non-ascii stdout/stderr
+- sh.RunError now strips long stdout/stderr messages
 
 1.1.0
 -----

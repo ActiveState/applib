@@ -21,7 +21,7 @@ warnings.filterwarnings('ignore', message='.*With\-statements.*',
 
 
 class RunError(Exception):  pass
-    
+
 
 class RunNonZeroReturn(RunError):
     """The command returned non-zero exit code"""
@@ -34,8 +34,8 @@ class RunNonZeroReturn(RunError):
             'non-zero returncode: {0}'.format(p.returncode),
             'command: {0}'.format(safe_unicode(cmd)),
             'pwd: {0}'.format(xjoin(os.getcwd())),
-            'stderr:\n{0}'.format(safe_unicode(stderr)),
-            'stdout:\n{0}'.format(safe_unicode(stdout)),
+            'stderr:\n{0}'.format(_limit_str(safe_unicode(stderr))),
+            'stdout:\n{0}'.format(_limit_str(safe_unicode(stdout))),
             ])
         super(RunNonZeroReturn, self).__init__(msg)
 
@@ -49,8 +49,8 @@ class RunTimedout(RunError):
             'seconds elapsed: {0}'.format(timeout),
             'command: {0}'.format(safe_unicode(cmd)),
             'pwd: {0}'.format(xjoin(os.getcwd())),
-            'stderr:\n{0}'.format(safe_unicode(stderr)),
-            'stdout:\n{0}'.format(safe_unicode(stdout)),
+            'stderr:\n{0}'.format(_limit_str(safe_unicode(stderr))),
+            'stdout:\n{0}'.format(_limit_str(safe_unicode(stdout))),
             ])
         super(RunTimedout, self).__init__(msg)
 
@@ -123,6 +123,12 @@ def _read_tmpfd(fil):
     fil.seek(0)
     return fil.read()
 
+
+def _limit_str(s, maxchars=80*15):
+    if len(s) > maxchars:
+        return '[...]\n' + s[:100]
+    return s
+    
 
 def _disable_windows_error_popup():
     """Set error mode to disable Windows error popup

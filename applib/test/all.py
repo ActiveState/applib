@@ -35,6 +35,17 @@ def test_sh_runerror_unicode():
             raise
 
 
+def test_sh_runerror_limit():
+    with pytest.raises(sh.RunError):
+        try:
+            sh.run(r'''python -c "print('\n'.join(['ABCDEFGHIJK']*100)); raise SystemExit('an error');"''')
+        except sh.RunError as e:
+            c = str(e).count('ABCDEFGHIJK')
+            assert c < 10
+            assert '[...]' in str(e)
+            raise            
+
+
 def test_sh_rm_file():
     with sh.tmpdir():
         with open('afile', 'w') as f: f.close()
