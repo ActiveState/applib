@@ -20,39 +20,45 @@ warnings.filterwarnings('ignore', message='.*With\-statements.*',
                         category=DeprecationWarning)
 
 
-class RunError(Exception):  pass
+class RunError(Exception):  
+
+    def __init__(self, cmd, stdout, stderr, errors):
+        self.stdout = stdout
+        self.stderr = stderr
+
+        msg = errors[:]
+        msg.extend([
+            'command: {0}'.format(safe_unicode(cmd)),
+            'pwd: {0}'.format(xjoin(os.getcwd()))])
+        
+        if stderr is None:
+            msg.append(
+                'OUTPUT:\n{0}'.format(_limit_str(safe_unicode(stdout))))
+        else:
+            msg.extend([
+                'STDERR:\n{0}'.format(_limit_str(safe_unicode(stderr))),
+                'STDOUT:\n{0}'.format(_limit_str(safe_unicode(stdout)))])
+
+        super(RunError, self).__init__('\n'.join(msg))
 
 
 class RunNonZeroReturn(RunError):
     """The command returned non-zero exit code"""
 
     def __init__(self, p, cmd, stdout, stderr):
-        self.stdout = stdout
-        self.stderr = stderr
-        
-        msg = '\n'.join([
-            'non-zero returncode: {0}'.format(p.returncode),
-            'command: {0}'.format(safe_unicode(cmd)),
-            'pwd: {0}'.format(xjoin(os.getcwd())),
-            'stderr:\n{0}'.format(_limit_str(safe_unicode(stderr))),
-            'stdout:\n{0}'.format(_limit_str(safe_unicode(stdout))),
+        super(RunNonZeroReturn, self).__init__(cmd, stdout, stderr, [
+            'non-zero returncode: {0}'.format(p.returncode)
             ])
-        super(RunNonZeroReturn, self).__init__(msg)
 
 
 class RunTimedout(RunError):
     """process is taking too much time"""
 
     def __init__(self, cmd, timeout, stdout, stderr):
-        msg = '\n'.join([
+        super(RunTimedout, self).__init__(cmd, stdout, stderr, [
             'timed out; ergo process is terminated',
             'seconds elapsed: {0}'.format(timeout),
-            'command: {0}'.format(safe_unicode(cmd)),
-            'pwd: {0}'.format(xjoin(os.getcwd())),
-            'stderr:\n{0}'.format(_limit_str(safe_unicode(stderr))),
-            'stdout:\n{0}'.format(_limit_str(safe_unicode(stdout))),
             ])
-        super(RunTimedout, self).__init__(msg)
 
     
 # TODO: support for incremental results (sometimes a process run for a few
@@ -100,7 +106,8 @@ def run(cmd, merge_streams=False, timeout=None, env=None):
                         p.terminate()
                         raise RunTimedout(
                             cmd, timeout,
-                            _read_tmpfd(outf), _read_tmpfd(errf))
+                            _read_tmpfd(outf),
+                            None if merge_streams else _read_tmpfd(errf))
                     time.sleep(0.1)
 
             # the process has exited by now; nothing will to be written to
@@ -109,7 +116,7 @@ def run(cmd, merge_streams=False, timeout=None, env=None):
             stderr = _read_tmpfd(errf)
 
     if p.returncode != 0:
-        raise RunNonZeroReturn(p, cmd, stdout, stderr)
+        raise RunNonZeroReturn(p, cmd, stdout, None if merge_streams else stderr)
     else:
         return stdout, stderr
 
@@ -126,7 +133,7 @@ def _read_tmpfd(fil):
 
 def _limit_str(s, maxchars=80*15):
     if len(s) > maxchars:
-        return '[...]\n' + s[:maxchars]
+        return '[...]\n' + s[-maxchars:]
     return s
     
 
