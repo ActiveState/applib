@@ -1,5 +1,6 @@
 # Copyright (c) 2010 ActiveState Software Inc. All rights reserved.
 
+from __future__ import unicode_literals
 import os
 from os import path
 import tempfile
@@ -9,6 +10,8 @@ import pytest
 
 from applib import sh
 from applib import textui
+from applib.misc import safe_unicode
+import six
 
 
 fixtures = path.join(path.dirname(__file__), 'fixtures')
@@ -20,6 +23,16 @@ def test_import():
     import applib.textui
     import applib.log
     import applib.misc
+
+
+def test_sh_runerror_unicode():
+    # https://github.com/activestate/applib/issues/12
+    with pytest.raises(sh.RunError):
+        try:
+            sh.run('echo ' + "\u1234" + " & nonexistant")
+        except sh.RunError as e:
+            print(safe_unicode(e))
+            raise
 
 
 def test_sh_rm_file():

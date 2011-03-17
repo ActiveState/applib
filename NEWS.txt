@@ -4,9 +4,10 @@ News
 1.1.1 (unreleased)
 ------------------
 
-- sh.rm: ensure that only symlinks are deleted (not the while dir)
+- sh.rm: ensure that only symlinks are deleted (not the entire dir)
 - sh.rm: remove symlinks as well (`PyPM Bug #89540
   <http://bugs.activestate.com/show_bug.cgi?id=89540>`_)
+- #12: sh.RunError now handles non-ascii stdout/stderr
 
 1.1.0
 -----

@@ -16,15 +16,19 @@ clean = venv.clean
 init = venv.init
 
 
-def test():
+def test(k=None):
     """Run tests"""
     venv.install('pytest')
     py_test = venv.get_script('py.test')
     test_script = P.join('applib', 'test', 'all.py')
     if not P.exists('tmp'):
         os.mkdir('tmp')
+    if k is not None:
+        args = " -k " + k
+    else:
+        args = ""
     local(
-        '{0} -x -v {1} --junitxml=tmp/testreport.xml'.format(py_test, test_script),
+        '{0} -x -v {1} {2} --junitxml=tmp/testreport.xml'.format(py_test, test_script, args),
         capture=False)
 
 

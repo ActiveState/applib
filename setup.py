@@ -39,6 +39,6 @@ setup(name='applib',
       include_package_data=True,
       zip_safe=True,
       install_requires=[
-          'appdirs', 'six',
+          'appdirs', 'six>=1.0.0',
       ],
       )

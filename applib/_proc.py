@@ -3,6 +3,7 @@
 """Process execution wrappers
 """
 
+from __future__ import unicode_literals
 import os
 import sys
 import time
@@ -11,6 +12,7 @@ from tempfile import TemporaryFile
 import warnings
 
 from applib.misc import xjoin
+from applib.misc import safe_unicode
 
 __all__ = ['run', 'RunError', 'RunNonZeroReturn', 'RunTimedout']
 
@@ -18,8 +20,8 @@ warnings.filterwarnings('ignore', message='.*With\-statements.*',
                         category=DeprecationWarning)
 
 
-class RunError(Exception): pass
-
+class RunError(Exception):  pass
+    
 
 class RunNonZeroReturn(RunError):
     """The command returned non-zero exit code"""
@@ -30,10 +32,10 @@ class RunNonZeroReturn(RunError):
         
         msg = '\n'.join([
             'non-zero returncode: {0}'.format(p.returncode),
-            'command: {0}'.format(cmd),
+            'command: {0}'.format(safe_unicode(cmd)),
             'pwd: {0}'.format(xjoin(os.getcwd())),
-            'stderr:\n{0}'.format(stderr),
-            'stdout:\n{0}'.format(stdout),
+            'stderr:\n{0}'.format(safe_unicode(stderr)),
+            'stdout:\n{0}'.format(safe_unicode(stdout)),
             ])
         super(RunNonZeroReturn, self).__init__(msg)
 
@@ -45,10 +47,10 @@ class RunTimedout(RunError):
         msg = '\n'.join([
             'timed out; ergo process is terminated',
             'seconds elapsed: {0}'.format(timeout),
-            'command: {0}'.format(cmd),
+            'command: {0}'.format(safe_unicode(cmd)),
             'pwd: {0}'.format(xjoin(os.getcwd())),
-            'stderr:\n{0}'.format(stderr),
-            'stdout:\n{0}'.format(stdout),
+            'stderr:\n{0}'.format(safe_unicode(stderr)),
+            'stdout:\n{0}'.format(safe_unicode(stdout)),
             ])
         super(RunTimedout, self).__init__(msg)
 

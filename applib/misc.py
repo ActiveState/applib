@@ -5,6 +5,7 @@
 
 import sys
 from os import path
+import six
 
 from applib import _cmdln as cmdln
 
@@ -44,6 +45,19 @@ def require_option(options, option_name, details=None):
             msg = '%s (%s)' % (msg, details)
         raise cmdln.CmdlnUserError(msg)
     
+
+# http://code.activestate.com/recipes/466341-guaranteed-conversion-to-unicode-or-byte-string/
+def safe_unicode(obj, *args):
+    """ return the unicode representation of obj """
+    u = str if six.PY3 else unicode
+        
+    try:
+        return u(obj, *args)
+    except UnicodeDecodeError:
+        # obj is byte string
+        ascii_text = str(obj).encode('string_escape')
+        return u(ascii_text)
+
     
 def _hack_unix2win_path_conversion(cmdln_options, option_names):
     """Hack to convert Unix paths in cmdln options (via config file) to
