@@ -9,6 +9,7 @@ News
   <http://bugs.activestate.com/show_bug.cgi?id=89540>`_)
 - #12: sh.RunError now handles non-ascii stdout/stderr
 - sh.RunError now strips long stdout/stderr messages
+- applib.misc.safe_unicode: error-free unicode strings!
 
 1.1.0
 -----

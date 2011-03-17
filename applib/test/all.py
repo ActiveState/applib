@@ -43,7 +43,24 @@ def test_sh_runerror_limit():
             c = str(e).count('ABCDEFGHIJK')
             assert c < 10
             assert '[...]' in str(e)
-            raise            
+            raise
+
+
+def test_safe_unicode():
+    from applib.misc import safe_unicode
+    import six
+
+    abc_bytes = b'ab\nc'
+    abc_text = 'ab\nc'
+
+    assert safe_unicode(abc_bytes) == abc_text
+    assert safe_unicode(abc_text) == abc_text
+
+    foo_text = 'abc'  # note: \x89 is ignored.
+    foo_bytes = b'\x89abc'
+
+    assert safe_unicode(foo_text) == foo_text
+    assert safe_unicode(foo_bytes) == foo_text
 
 
 def test_sh_rm_file():
