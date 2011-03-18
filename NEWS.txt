@@ -1,8 +1,10 @@
 News
 ====
 
-1.1.1 (unreleased)
-------------------
+1.2
+---
+
+*Release date: 19-March-2011*
 
 - sh.rm: ensure that only symlinks are deleted (not the entire dir)
 - sh.rm: remove symlinks as well (`PyPM Bug #89540
