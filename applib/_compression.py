@@ -123,6 +123,12 @@ class TarredFile(CompressedFile):
                 raise sh.PackError(e)
             else:
                 raise
+        except OSError as e:
+            # http://bugs.activestate.com/show_bug.cgi?id=89657
+            if sys.platform == 'win32':
+                if isinstance(e, WindowsError) and e.winerror == 123:
+                    raise sh.PackError(e)
+            raise
             
     @classmethod
     def pack(cls, paths, file):

@@ -181,6 +181,19 @@ def test_compression_catch_invalid_mode():
         extract()
     
     
+@skipif('sys.platform != "win32"')
+def test_compression_windows_syntax_incorrect():
+    """
+    WindowsError: [Error 123] The filename, directory name, or volume label syntax i
+    s incorrect: '.\\merengue-0.7.0\\plugins\\saml2\\attribute-maps\\urn:oasis:names
+    :tc:SAML:2.0:attrname-format:uri'
+    """
+    testdir = tempfile.mkdtemp('-test', 'pypm-')
+    with pytest.raises(sh.PackError):
+        extracted_dir, _ = sh.unpack_archive(
+            path.join(fixtures, 'merengue-0.7.0.tar.gz'), testdir)
+    
+    
 @pytest.mark.xfail
 def test_compression_issue_11():
     """https://github.com/ActiveState/applib/issues/#issue/11
@@ -192,4 +205,3 @@ def test_compression_issue_11():
     """
     testdir = tempfile.mkdtemp('applib')
     d, _ = sh.unpack_archive(path.join(fixtures, 'airi-0.0.1.tar.gz'), testdir)
-    
