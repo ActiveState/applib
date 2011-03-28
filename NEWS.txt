@@ -1,6 +1,14 @@
 News
 ====
 
+dev
+---
+
+*Release date: ??-2011*
+
+- compression: catch WindowsError 123 (`PyPM Bug #89657
+  <http://bugs.activestate.com/show_bug.cgi?id=89657>`_)
+
 1.2
 ---
 
@@ -12,8 +20,6 @@ News
 - #12: sh.RunError now handles non-ascii stdout/stderr
 - sh.RunError now strips long stdout/stderr messages
 - applib.misc.safe_unicode: error-free unicode strings!
-- compression: catch WindowsError 123 (`PyPM Bug #89657
-  <http://bugs.activestate.com/show_bug.cgi?id=89657>`_)
 
 1.1.0
 -----
