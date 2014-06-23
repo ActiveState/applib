@@ -1,5 +1,4 @@
-Hacking applib
-==============
+# Hacking applib
 
 ```
 virtualenv --no-setuptools .
