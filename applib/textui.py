@@ -30,7 +30,7 @@ class ProgressBar(object):
         show_size - function to return the string to display instead of the number `size`
         """
         assert total >= 0, total
-        assert delay >= 0 or delay is None, delay
+        assert delay is None or delay >= 0, delay
         assert show_size
         
         _set_current_progress_bar(self)
@@ -177,7 +177,7 @@ class ProgressBar(object):
         if _istty():
             sys.stdout.write('\r' + progress_bar + '\r')
         else:
-            print progress_bar
+            print(progress_bar)
         sys.stdout.flush()
 
 
