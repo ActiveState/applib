@@ -2,6 +2,7 @@
 
 """Textual UI: progress bar and colprint"""
 
+import os
 import sys
 from datetime import datetime, timedelta
 from contextlib import contextmanager
@@ -22,17 +23,22 @@ if not six.PY3:
 class ProgressBar(object):
     """Show percent progress every 'n' seconds"""
 
-    def __init__(self, total, delay=0.1, show_size=lambda x: x, note=None):
+    def __init__(self, total, delay=None, show_size=lambda x: x, note=None):
         """
         total - total number of items that are going to be processed
-        delay - update delay in seconds
+        delay - update delay, in seconds
         show_size - function to return the string to display instead of the number `size`
         """
         assert total >= 0, total
-        assert delay >= 0, delay
+        assert delay is None or delay >= 0, delay
         assert show_size
         
         _set_current_progress_bar(self)
+        if delay is None:
+            if _istty():
+                delay = 0.1
+            else:
+                delay = 5   # output redirection; less flood
         self.delay = timedelta(seconds=delay)
         self.delay_duration = timedelta(seconds=1)
         self.start = datetime.now()
@@ -68,7 +74,11 @@ class ProgressBar(object):
         finally:
             p.close()
         if post and clean_exit:
-            sys.stdout.write(post.format(**p.__dict__) + '\n')
+            line = post.format(**p.__dict__)
+            if _istty():
+                sys.stdout.write(line + '\n')
+            else:
+                print(line)
 
     def tick(self, items=1):
         """The method that updates the display if necessary.
@@ -100,8 +110,9 @@ class ProgressBar(object):
         # Move cursor to the beginning of current progress line so that further
         # messages will overwrite the progress bar. Also overwrite the previous
         # progress bar with empty space.
-        sys.stdout.write('\r' + ' '*self._length + '\r')
-        sys.stdout.flush()
+        if _istty():
+            sys.stdout.write('\r' + ' '*self._length + '\r')
+            sys.stdout.flush()
 
     def close(self):
         """Close (hide) the progress bar
@@ -162,7 +173,11 @@ class ProgressBar(object):
         ])
         
         self._length = len(progress_bar)
-        sys.stdout.write('\r' + progress_bar + '\r')
+
+        if _istty():
+            sys.stdout.write('\r' + progress_bar + '\r')
+        else:
+            print(progress_bar)
         sys.stdout.flush()
 
 
@@ -357,3 +372,6 @@ def _del_current_progress_bar(pbar):
     assert _current_progress_bar is pbar, 'pbar is something else'
     _current_progress_bar = None
 
+
+def _istty():
+    return os.isatty(sys.stdout.fileno())
