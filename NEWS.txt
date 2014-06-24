@@ -4,8 +4,9 @@ News
 dev
 ---
 
-*Release date: ??-2011*
+*Release date: ??-2014*
 
+- Supress progress bar animation if redirecting; [PR 19](https://github.com/ActiveState/applib/pull/19)
 - compression: catch WindowsError 123 (`PyPM Bug #89657
   <http://bugs.activestate.com/show_bug.cgi?id=89657>`_)
 
