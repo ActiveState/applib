@@ -47,6 +47,7 @@ class ProgressBar(object):
         self.lastprint = None
         self.lastprint_duration = None  # for updating duration/ETA
         self.lastprocessed = 0
+	self.lastline = ''
         self.total = total
         self.processed = 0
         self.show_size = show_size
@@ -177,7 +178,10 @@ class ProgressBar(object):
         if _istty():
             sys.stdout.write('\r' + progress_bar + '\r')
         else:
-            print(progress_bar)
+	    # Only print if different from last progress line, to prevent flood
+	    if self.lastline != progress_bar:
+		self.lastline = progress_bar
+            	print(progress_bar)
         sys.stdout.flush()
 
 
