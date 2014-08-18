@@ -306,15 +306,14 @@ def _find_unix_console_width():
     import termios, fcntl, struct, sys
 
     # fcntl.ioctl will fail if stdout is not a tty
-    if not sys.stdout.isatty():
+    if sys.stdout.isatty():
+        s = struct.pack("HHHH", 0, 0, 0, 0)
+        fd_stdout = sys.stdout.fileno()
+        size = fcntl.ioctl(fd_stdout, termios.TIOCGWINSZ, s)
+        height, width = struct.unpack("HHHH", size)[:2]
+        return width
+    else:
         return None
-
-    s = struct.pack("HHHH", 0, 0, 0, 0)
-    fd_stdout = sys.stdout.fileno()
-    size = fcntl.ioctl(fd_stdout, termios.TIOCGWINSZ, s)
-    height, width = struct.unpack("HHHH", size)[:2]
-    return width
-
 
 def _find_windows_console_width():
     # http://code.activestate.com/recipes/440694/
@@ -378,4 +377,5 @@ def _del_current_progress_bar(pbar):
 
 
 def _istty():
-    return os.isatty(sys.stdout.fileno())
+    return hasattr(sys.stdout, 'fileno') and \
+        os.isatty(sys.stdout.fileno())
